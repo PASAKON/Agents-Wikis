@@ -119,8 +119,8 @@ OpenAI, Anthropic, ElevenLabs, Deepgram — each exposes a `/usage` or `/billing
 
 ## Related
 
-- [IRON-RULES §28](../IRON-RULES.md#section-28--workflow-balance-precalculate-ceo-directive-2026-05-18) — canonical rule
-- [IRON-RULES §27](../IRON-RULES.md#section-27--drive-folder-convention-ceo-directive-2026-05-18) — Drive folder convention (related, not coupled)
+- [IRON-RULES §28](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-28--workflow-balance-precalculate-ceo-directive-2026-05-18) (`mooniex:IRON-RULES.md`) — canonical rule
+- [IRON-RULES §27](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-27--drive-folder-convention-ceo-directive-2026-05-18) (`mooniex:IRON-RULES.md`) — Drive folder convention (related, not coupled)
 - [`fal-queue-jobs.md`](fal-queue-jobs.md) — fal.ai queue contract (webapp side)
 - [`projects/mooniex-claudeflow.md`](../projects/mooniex-claudeflow.md) — claudeflow project facts
 
