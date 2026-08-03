@@ -1,11 +1,32 @@
-# CEO Information
+﻿# CEO Information
 
 Recurring personal facts about the CEO (**Pasakon Rachchakot**) recorded so
 agents don't re-ask. These are the CEO's **personal** assets — distinct from
 the MoonieX company brand. Keep them separate in invoices, content, and
 analytics.
 
-_Last updated: 2026-06-16 (CTO — added personal LINE add-link + QR)._
+_Last updated: 2026-08-03 (CFO — added legal/KYC identity + personal bank for invoice generation)._
+
+> ⚠️ **Sensitive file** — this page now contains national ID number and bank
+> account numbers (personal + company). Needed for Thai invoice/quotation
+> generation (`scripts/invoice_gen/generate_invoice.py`) and legal-entity
+> lookups. Do not paste this file's content into public artifacts, external
+> chat tools, or screen-shares. Treat like the card-number hard_rule in
+> `decisions/subscriptions-registry.md` (last-4 only) — this is the one
+> exception, kept in full because invoices legally require it.
+
+## Legal / KYC identity (CEO, personal)
+
+| Field | Value |
+|---|---|
+| Full name | Pasakon Rachchakot |
+| National ID (เลขบัตรประชาชน) | 1100702450712 |
+| Address | 114/447 หมู่ 2 หมู่บ้านกัลปพฤกษ์วิวล์ ถ.เทพารักษ์ ต.บางเสาธง อ.บางเสาธง จ.สมุทรปราการ 10540 |
+| Bank | Kasikornbank (KBank), สาขา Bangbo |
+| Account name | Pasakon Rachchakot |
+| Account number | 0148582270 |
+
+_Source: CEO, provided 2026-08-03. (Account name/number as given were transposed in the raw message — corrected above: name is the person, number is the digit string.)_
 
 ## Personal-branding social channels
 
