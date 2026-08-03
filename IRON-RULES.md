@@ -10,7 +10,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > §23 engineering integrity · §29 visible DEV spawn · §30 DB table governance ·
 > §31 one CTO per repo · §32 tab title · §33 act only on tasks you own ·
 > §34 key registry · §35 session discipline · §36 CTO merges · §37 no crude
-> language · §38 TOON · §39 no em dash · §40 LungNote SID tag.
+> language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable wiki.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -941,3 +941,43 @@ sanctioned wrapper today (verified: absent from the DEV tool schema in
 task-3c92a4c3, worked around via raw MCP stdio for that one verification).
 Tracked as a follow-up infra task; until fixed, DEVs cannot practically
 follow this rule through normal means.
+
+---
+
+## Section 41 — Wiki must stay graph-readable (CEO directive 2026-08-03)
+
+**Hard rule.** Every wiki note must be written so the Obsidian graph view can actually
+render its relationships. The graph is the CEO's primary overview surface across all
+three wikis, so a note that is invisible to the graph is a note the CEO cannot find.
+
+Full conventions, measurements, and the graph presets live in
+`mooniex:playbooks/wiki-graph-conventions.md`. The binding rules are:
+
+1. **Reference other wiki notes with `[[wikilinks]]` only.** Never a backtick path like
+   `` `playbooks/foo.md` ``, never a full GitHub URL for a note that lives in a wiki.
+   Both are invisible to the graph. Measured 2026-08-03 in MoonieX-Wikis: 227 backtick
+   refs and 99 full URLs versus only 14 real wikilinks, leaving 57% of notes with no
+   graph edges at all.
+2. **Links must resolve to a file that exists.** A dead link renders as a phantom node
+   that looks like a real note. Measured: 62 of 105 wikilinks (59%) were phantoms,
+   including six `mooniex-webapp-desk-*` ghosts of a pattern ADR 0007 retired in May.
+3. **Note filenames must be unique across all three wikis.** Duplicates make
+   `[[NAME]]` ambiguous and Obsidian silently picks one, which can link to the wrong
+   wiki entirely.
+4. **Child notes must not link up to INDEX or IRON-RULES.** Hub links from every note
+   collapse the graph into a single hairball with no middle layer. Hubs link down only.
+5. **Wiki holds slow-changing knowledge only.** Decisions, rationale, rules, purpose,
+   architecture. Never commit hashes, issue counts, current status, or last-touched
+   dates — those go stale within a day and must be read live from git, gh, or the DB.
+6. **The merged symlink vault is for human eyes only.** Agent search tools must target
+   the real repo paths. Verified 2026-08-03: `find`, `rg`, and `grep -r` all return
+   **zero results with no error** through symlinks, while `find -L` and `rg --follow`
+   return all 204 files. A silent zero is more dangerous than a failure.
+
+> CEO (verbatim, 2026-08-03): "ช่วยออกแบบ การเชื่อมโยง + กฏของการสร้าง Wikis ใหม่
+> เพื่อให้เห็นภาพรวมแบบชัดเจนเมื่อมีการ Update Wikis ตลอดเวลา"
+
+**Why:** the relationships already existed in the writing, but were expressed in forms
+the graph cannot draw, so the overview the CEO needed was never visible. Rules 1 to 4
+make structure render; rule 5 keeps it from rotting; rule 6 prevents a silent search
+failure that would make an agent believe the wiki is empty.
