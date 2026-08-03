@@ -1,7 +1,7 @@
 # ADR 0010 — Adopt TOON encoding for JSON/text fed into LLM context
 
 **Status:** Accepted (CEO directive 2026-07-31)
-**Related:** [`IRON-RULES.md` §38](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-38--toon-encode-jsontext-context-wherever-feasible-ceo-directive-2026-07-31) (`mooniex:IRON-RULES.md`), `reference_headroom_token_tool` memory (superseded — see below)
+**Related:** [`IRON-RULES.md` §38](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-38--toon-encode-jsontext-context-wherever-feasible-ceo-directive-2026-07-31) (`org:IRON-RULES.md`), `reference_headroom_token_tool` memory (superseded — see below)
 
 ## Context
 

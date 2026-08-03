@@ -109,5 +109,5 @@ Run cleanup:
 
 - [[cto-dev-orchestration]] — DEV tab spawn (parallel pattern)
 - [[agent-messaging]] — coord MCP messaging (async queue alternative)
-- [IRON-RULES §29 DEV visible animation](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-29) (`mooniex:IRON-RULES.md`)
+- [IRON-RULES §29 DEV visible animation](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-29) (`org:IRON-RULES.md`)
 - [[../decisions/2026-05-26-cxo-tab-id-locked-close|ADR 2026-05-26]]

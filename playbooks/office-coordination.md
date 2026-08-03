@@ -1,4 +1,15 @@
-# Playbook — Office Simulator + desk coordination
+# Playbook — Office Simulator + desk coordination (LEGACY)
+
+> ⛔ **Retired by [ADR-0007](../decisions/0007-deprecate-desk-pattern.md)
+> (2026-05-28).** Desks are gone: one repo = one folder, parallel work uses
+> branches + GH issue assignment, and path locks in `state/tasks.db` do what
+> desk claims used to. See
+> [`worktree-and-concurrent-sessions.md`](worktree-and-concurrent-sessions.md)
+> for how it actually works now.
+>
+> Kept because `IRON-RULES §15` and several playbooks still link here. **Do not
+> build against it.** Flagged in the ADR-0013 Phase 6 cleanup.
+
 
 Live coordination of which agent sits at which webapp desk. Backed by:
 - Tables: `webapp_office_desks` + `webapp_office_claims` + `webapp_office_agents`
@@ -6,7 +17,7 @@ Live coordination of which agent sits at which webapp desk. Backed by:
 - UI: `/admin/office-simulator`
 - Hooks: `~/.claude/hooks/office-{pretool,userprompt,stop}.mjs`
 
-Full rules: [IRON-RULES §1 desk model](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`mooniex:IRON-RULES.md`) + [§15 agent role + coordination](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`mooniex:IRON-RULES.md`).
+Full rules: [IRON-RULES §1 desk model](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`org:IRON-RULES.md`) + [§15 agent role + coordination](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`org:IRON-RULES.md`).
 
 ## One-time setup
 

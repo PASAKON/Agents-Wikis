@@ -1,6 +1,6 @@
 # Playbook — Agent-to-agent messaging (Office mailbox)
 
-Cross-session chat for ClaudeCode agents. Backed by `webapp_office_messages` + `/api/office/messages/*` + `~/.claude/hooks/office-inbox.mjs` + `mooniex-coord` MCP server. Full rules: [IRON-RULES §17](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox) (`mooniex:IRON-RULES.md`).
+Cross-session chat for ClaudeCode agents. Backed by `webapp_office_messages` + `/api/office/messages/*` + `~/.claude/hooks/office-inbox.mjs` + `mooniex-coord` MCP server. Full rules: [IRON-RULES §17](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox) (`org:IRON-RULES.md`).
 
 ## One-time setup
 

@@ -62,7 +62,7 @@ Fix only what was asked. Don't bundle "while I'm here, I'll also reformat / refa
 ### TRACE BEFORE FIX
 Identify the **root cause** before patching. If you can't reproduce: say so. Symptom-only fixes accumulate into the same "I forgot the rule" debt §0 was created to prevent.
 
-Full text: [IRON-RULES.md §23](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`mooniex:IRON-RULES.md`).
+Full text: [IRON-RULES.md §23](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`org:IRON-RULES.md`).
 
 ## Secrets / API keys — check the registry FIRST (IRON-RULES §34)
 

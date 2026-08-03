@@ -1,8 +1,20 @@
-# Office Simulator — claim / heartbeat / release API
+# Office Simulator — claim / heartbeat / release API (LEGACY)
+
+> ⛔ **The Desk pattern this documents was retired by
+> [ADR-0007](../decisions/0007-deprecate-desk-pattern.md) (2026-05-28).** One
+> repo = one folder; parallel work uses branches + GH issue assignment, and
+> path locks in `state/tasks.db` replaced desk claims. Nothing spawned today
+> calls this API.
+>
+> Kept for the underlying coordination model (claim → heartbeat → release),
+> which the current path-lock design still mirrors, and because `IRON-RULES §15`
+> still cites it. **Do not build against it.** Flagged in the ADR-0013 Phase 6
+> cleanup; delete once §15 is rewritten.
+
 
 > Every agent that touches a `mooniex-webapp (Desk-*)` working copy
 > MUST claim the desk first, beat the heartbeat while working, and
-> release on stop. Per [IRON-RULES §15](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`mooniex:IRON-RULES.md`).
+> release on stop. Per [IRON-RULES §15](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`org:IRON-RULES.md`).
 
 The PreToolUse / UserPromptSubmit / Stop hooks at
 `~/.claude/hooks/office-{pretool,userprompt,stop}.mjs` do this

@@ -33,7 +33,7 @@ git log --oneline HEAD..origin/<branch>      # commits behind — must be 0 befo
 
 If behind: `git pull --ff-only` (or `--rebase`).
 
-If you're not on the right branch (per project's branch convention, see [IRON-RULES §2](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-2--github-push-rules-cross-cutting) (`mooniex:IRON-RULES.md`)): create one.
+If you're not on the right branch (per project's branch convention, see [IRON-RULES §2](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-2--github-push-rules-cross-cutting) (`org:IRON-RULES.md`)): create one.
 
 ## Step 4 — Check OTHER desks (shared repo)
 

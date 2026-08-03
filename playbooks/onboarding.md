@@ -37,9 +37,9 @@ ls ~/.claude/office-state-*.json
 Stop at the first one that answers your question:
 
 1. **[README.md](https://github.com/PASAKON/MoonieX-Wikis/blob/main/README.md) (`mooniex:README.md`)** — the directory of every wiki file
-2. **[IRON-RULES.md §0](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-0--read-the-wiki-first-when-uncertain-ceo-directive-2026-04-28) (`mooniex:IRON-RULES.md`)** — *the* read-first rule
-3. **[IRON-RULES.md §1](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`mooniex:IRON-RULES.md`)** — desk model + your role
-4. **[IRON-RULES.md §23](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`mooniex:IRON-RULES.md`)** — engineering integrity (NO MAGIC, VERIFY BEFORE DONE, DISSENT, NO SCOPE CREEP, TRACE BEFORE FIX)
+2. **[IRON-RULES.md §0](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-0--read-the-wiki-first-when-uncertain-ceo-directive-2026-04-28) (`org:IRON-RULES.md`)** — *the* read-first rule
+3. **[IRON-RULES.md §1](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`org:IRON-RULES.md`)** — desk model + your role
+4. **[IRON-RULES.md §23](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`org:IRON-RULES.md`)** — engineering integrity (NO MAGIC, VERIFY BEFORE DONE, DISSENT, NO SCOPE CREEP, TRACE BEFORE FIX)
 5. **`projects/<your-folder>.md`** — the facts about the project you're sitting in
 6. **`projects/mooniex-webapp-roles.md`** if you sit at a webapp desk — what your role's scope is
 7. **`projects/mooniex-webapp-desk-<x>.md`** — your desk's specifics
@@ -117,7 +117,7 @@ cat AUDIT-2026-04-28.md          # or the most recent one
 
 - ❌ Don't run `vercel deploy` until you've read [IRON-RULES §3](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-3--vercel-deploy-rules) (`mooniex:IRON-RULES.md`) end-to-end
 - ❌ Don't write a migration until you've read [IRON-RULES §12](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-12--database-migrations-mooniex-webapp) (`mooniex:IRON-RULES.md`) + [`playbooks/database-migrations.md`](https://github.com/PASAKON/MoonieX-Wikis/blob/main/playbooks/database-migrations.md) (`mooniex:playbooks/database-migrations.md`)
-- ❌ Don't add an env var until you've read [IRON-RULES §5](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-5--env--secrets) (`mooniex:IRON-RULES.md`) (use `printf`, never `echo`)
+- ❌ Don't add an env var until you've read [IRON-RULES §5](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-5--env--secrets) (`org:IRON-RULES.md`) (use `printf`, never `echo`)
 - ❌ Don't broadcast to a channel without a `from_agent_id` resolved per the table above
 - ❌ Don't claim "done" without the verification output (IRON-RULES §23.2)
 - ❌ Don't bundle "while I'm here" changes into the asked task (IRON-RULES §23.4)
@@ -132,4 +132,4 @@ The escape hatch is documented in IRON-RULES §0 — read the wiki, then DM the 
 - [`agent-listener.md`](agent-listener.md) — receiving messages (Phase 1+)
 - [`local-dev-setup.md`](https://github.com/PASAKON/MoonieX-Wikis/blob/main/playbooks/local-dev-setup.md) (`mooniex:playbooks/local-dev-setup.md`) — getting the app running locally
 - [`before-cross-folder-edit.md`](before-cross-folder-edit.md) — when your task touches another folder
-- [IRON-RULES §0](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-0--read-the-wiki-first-when-uncertain-ceo-directive-2026-04-28) (`mooniex:IRON-RULES.md`), [§1](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`mooniex:IRON-RULES.md`), [§17](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox) (`mooniex:IRON-RULES.md`), [§23](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`mooniex:IRON-RULES.md`)
+- [IRON-RULES §0](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-0--read-the-wiki-first-when-uncertain-ceo-directive-2026-04-28) (`org:IRON-RULES.md`), [§1](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`org:IRON-RULES.md`), [§17](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox) (`org:IRON-RULES.md`), [§23](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-23--engineering-integrity-ceo-directive-2026-04-29) (`org:IRON-RULES.md`)

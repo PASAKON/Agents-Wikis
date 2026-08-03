@@ -111,5 +111,5 @@ If ephemeral-spawn pattern causes more churn than it solves:
 - [[../playbooks/cxo-tab-lifecycle]] — operational detail
 - [[../playbooks/cto-dev-orchestration]] — DEV spawn parallel pattern
 - [[../playbooks/agent-messaging]] — async coord MCP alternative
-- [IRON-RULES §29 DEV visible animation](https://github.com/PASAKON/MoonieX-Wikis/blob/main/IRON-RULES.md#section-29) (`mooniex:IRON-RULES.md`)
+- [IRON-RULES §29 DEV visible animation](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-29) (`org:IRON-RULES.md`)
 - mooniex-agents tracker: see CFO carry-over issue #8 for coord MCP deployment status
