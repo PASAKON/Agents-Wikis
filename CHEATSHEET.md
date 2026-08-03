@@ -10,7 +10,7 @@
 > [MoonieX's cheatsheet](https://github.com/PASAKON/MoonieX-Wikis/blob/main/CHEATSHEET.md)
 > (`mooniex:CHEATSHEET.md`). Split 2026-08-03 per ADR 0013.
 
-> Companion: [`playbooks/onboarding.md`](https://github.com/PASAKON/Agents-Wikis/blob/main/playbooks/onboarding.md) (`org:playbooks/onboarding.md`), [`playbooks/local-dev-setup.md`](playbooks/local-dev-setup.md). Linked from [`README.md`](README.md).
+> Companion: [`playbooks/onboarding.md`](https://github.com/PASAKON/Agents-Wikis/blob/main/playbooks/onboarding.md) (`org:playbooks/onboarding.md`), [`playbooks/local-dev-setup.md`](https://github.com/PASAKON/MoonieX-Wikis/blob/main/playbooks/local-dev-setup.md) (`mooniex:playbooks/local-dev-setup.md`). Linked from [`README.md`](README.md).
 
 ## Identity
 

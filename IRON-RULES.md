@@ -113,7 +113,7 @@ Roles are assigned **per task**, not per folder. The Agents virtual-org
 (`config/projects.yaml`) declares allowed worker roles per project; the CTO
 spawns the right role for the work. The role is part of the task record,
 not the working tree. The old `webapp_office_agents` table / `/api/office/claim`
-endpoint is retired — see [`MIGRATIONS.md`](../MIGRATIONS.md) §desk-pattern.
+endpoint is retired — see [`MIGRATIONS.md`](https://github.com/PASAKON/MoonieX-Wikis/blob/main/MIGRATIONS.md) (`mooniex:MIGRATIONS.md`) §desk-pattern.
 
 ### Why this model (replacing the desk pattern)
 
@@ -192,7 +192,7 @@ Beyond Supabase basics:
 - `EA_API_KEY` — MT5 EA webhook secret (64+ char hex)
 - `PARTNER_ALLOWLIST_EMAILS` — comma-separated
 - `TWELVE_DATA_API_KEY` — DASH-Q3 candle feed (free tier 800/day, 8/min)
-- `SENTRY_API_TOKEN` — **admin scope** as of 2026-04-27. Grants AI / agent toolchain full Sentry REST API access (read + write + delete + assign + comment + project settings). Required for `/admin/errors` resolve / ignore / bulk PUT, **plus** for the new bug-audit playbook (see [playbooks/sentry-bug-audit.md](../playbooks/sentry-bug-audit.md)). Rotate every 90 days minimum; rotate immediately if leaked
+- `SENTRY_API_TOKEN` — **admin scope** as of 2026-04-27. Grants AI / agent toolchain full Sentry REST API access (read + write + delete + assign + comment + project settings). Required for `/admin/errors` resolve / ignore / bulk PUT, **plus** for the new bug-audit playbook (see [playbooks/sentry-bug-audit.md](https://github.com/PASAKON/MoonieX-Wikis/blob/main/playbooks/sentry-bug-audit.md) (`mooniex:playbooks/sentry-bug-audit.md`)). Rotate every 90 days minimum; rotate immediately if leaked
 - `SENTRY_API_TOKEN_RW` — read+write fallback (no admin / no delete). Used by code paths that don't need to mutate org-level state. Library defaults to `SENTRY_API_TOKEN`; helpers may opt-in to `_RW` when admin scope is overkill
 - `FAL_API_KEY` — **must be admin-scope key** for `/v1/account/billing?expand=credits`. Regular model keys 401/403; the admin health card falls back to call-log "spent" total when scope is wrong
 - `CRON_SECRET` (optional) — gates `/api/cron/*` against manual triggers when `x-vercel-cron` header is absent
@@ -757,7 +757,7 @@ Anything short of these two → leave it alone. "It was right there in my chat a
 
 ## Section 34 — API keys & secrets: registry-first, no silent changes (CEO directive 2026-06-13)
 
-**Hard rule.** Before any agent **creates or rotates** an API key / secret / token, it MUST first consult the single source of truth: [`playbooks/api-key-registry.md`](playbooks/api-key-registry.md). This extends [§5 Env / secrets](#section-5--env--secrets).
+**Hard rule.** Before any agent **creates or rotates** an API key / secret / token, it MUST first consult the single source of truth: [`playbooks/api-key-registry.md`](https://github.com/PASAKON/MoonieX-Wikis/blob/main/playbooks/api-key-registry.md) (`mooniex:playbooks/api-key-registry.md`). This extends [§5 Env / secrets](#section-5--env--secrets).
 
 1. **Check before create.** A key for this purpose almost always already exists — find it in the registry and reuse it; do NOT mint a duplicate. Claude-in-Chrome may *change* a key when the CEO directs it, but "allowed to use Chrome" ≠ "create a new key" — verify the existing one first.
 2. **No silent changes.** Every create / rotate / delete = an append to the registry Changelog (date · logical key · action · who · why · old-last4→new-last4) in the same change-set. A key changed without a Changelog line is a P1.
