@@ -851,6 +851,16 @@ Loop: act → verify → "closer to the DoD?". Every new topic that surfaces mid
 
 **Why:** caveman-terse Thai drifted into มึง/กู, which reads as rude. The fix is a normal conversational register — not formality, not crudeness.
 
+**Carve-out (CEO confirmed 2026-08-03/04):** the **BLACK LIQUIDITY** content
+channel's existing narration voice (มึง/กู throughout, already in production
+at 47+ episodes — see `playbooks/drive-folder-manifest.md`) is a deliberate,
+established brand voice for that channel specifically, not a §37 violation.
+The carve-out is scoped to BLACK LIQUIDITY content only — it does not extend
+to any other channel/brand, to CTO/C-level chat, or to DEV output in general.
+A separate, not-yet-named trader-story channel (Jadoodoo/Aschenbrenner pilot
+scripts, `roles/script_writer.md`) is explicitly NOT BLACK LIQUIDITY and
+stays under the normal §37 rule.
+
 ---
 
 ## Section 38 — TOON-encode JSON/text context wherever feasible (CEO directive 2026-07-31)
