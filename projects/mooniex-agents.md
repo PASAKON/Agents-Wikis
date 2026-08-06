@@ -19,3 +19,10 @@ The virtual-org runtime: CEO → CTO → DEV orchestration, task queue (`state/t
 - **Problem:** multi-line messages typed into claude TUI tabs stuck in the composer unsubmitted — body + CR written back-to-back, CR swallowed by bracketed paste (CEO screenshot 2026-06-12, recurring).
 - **Fix:** shared `lib/iterm_type.type_submit_fragment()` — body → `delay 0.4` → CR → `delay 0.3` → rescue CR (no-op if first submitted). All 9 typewriter sites routed through it: send_to_cto/send_to_dev/send_to_cxo/inject_prompt via helper, idle-ping-watcher.sh + cxo-claude.sh inlined. New suite `scripts/test_iterm_typewriter.py` (8 tests). 47/47 green.
 - **Operational note:** running watchers/sessions use the old code until restarted.
+
+### 2026-08-06 — Full architecture audit (CEO-requested) — CTO
+- **Ask:** find weaknesses to fix, strengths to keep, excess to cut/merge (incl. debug/perf-check tooling), token-reduction levers, skill/rule additions.
+- **Method:** 4 parallel read-only Explore agents, ground-truth verified (not memory-derived) — core engine, scripts/tools/roles, disk-bloat root-cause, wiki+skills+hooks token footprint.
+- **Top findings:** 3 drifting orchestration-tool surfaces (CEO's own `agents-chat` REPL missing `revert_task_tool`); `depends_on` still unenforced at the lock layer (matches existing CTO workaround-by-hand); worktree GC never calls `remove_worktree` → ~5GB of 5.3GB `worktrees/` is stale; debug/perf layer itself is proportionate and mostly silent (not the bloat source); biggest token lever is ~150-200+ irrelevant `ecc:*` skill packs enumerated every session despite being CLAUDE.md-flagged as hard-skips (needs plugin-level fix, not doc-level).
+- **Full findings + evidence:** `org:reference/2026-08-06-agents-system-audit.md`.
+- **Status:** diagnostic only — nothing actioned yet, pending CEO pick.
