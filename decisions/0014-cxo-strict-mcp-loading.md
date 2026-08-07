@@ -2,7 +2,8 @@
 
 - **Date:** 2026-08-06 (amended 2026-08-07, see below)
 - **Author:** CTO (session #4911053b), at CEO request
-- **Status:** Accepted, shipped `cfa85bc` (mooniex-agents main); amended `d0d3229`
+- **Status:** Accepted, shipped `cfa85bc` (mooniex-agents main); amended
+  `d0d3229` + `b4d540e`
 - **Supersedes:** nothing. Related: [0009 model routing](0009-model-routing-policy.md),
   [2026-07-12 org runtime to Contabo](2026-07-12-org-runtime-to-contabo.md)
 
@@ -113,10 +114,10 @@ Contabo](2026-07-12-org-runtime-to-contabo.md) — Phase A done, B–F pending.
 
 ## Amendment — 2026-08-07 (CTO session #0934c3ae, CEO request)
 
-Shipped `d0d3229`. Terminology first, because the original framing invited a
-misreading: the split is keyed on **role**, never on **model**. Model choice
-lives in `cto-claude.sh` `MODEL_ARGS` and `config/agents.yaml` (ADR 0009) and
-has no relationship to which MCP servers load.
+Shipped `d0d3229`, `b4d540e`. Terminology first, because the original framing
+invited a misreading: the split is keyed on **role**, never on **model**.
+Model choice lives in `cto-claude.sh` `MODEL_ARGS` and `config/agents.yaml`
+(ADR 0009) and has no relationship to which MCP servers load.
 
 ### Three gaps found auditing the shipped implementation
 
@@ -175,12 +176,24 @@ survives `--strict-mcp-config`), `--no-session-persistence`.
 cost.** It speaks MCP over stdio via `scripts/lib/mcp_call.py` with no model
 in the loop. Benching *"how many open todos"* through a model returned **50,
 53, 7 and 193** across two models and two runs. The answer is **193**; a raw
-call returns it in ~1s for **zero tokens**. Two lessons: haiku cannot be
-trusted to aggregate over a payload (7 was its answer with the limit pinned),
-and an unpinned tool default silently truncates — `list_todos` caps at 50, so
-the plausible-looking "50" was the cap, not the count. Use a model for
-judgment (pick the best reference, summarise a thread), never for a number a
-tool already knows.
+call returns it in ~1s for **zero tokens**.
+
+The mechanism behind that spread was found while verifying the model default,
+and it is worse than imprecision: **a large tool result never reaches the
+model.** `list_todos` at `limit=500` returns ~91k characters, which Claude
+Code spills to a file and replaces with an "exceeds maximum allowed tokens"
+notice — the model was answering with no data in front of it. A
+model-mediated borrow over a big payload is therefore unreliable *by
+construction*. `--raw` has no such ceiling. Two secondary lessons: an
+unpinned tool default truncates silently (`list_todos` caps at 50, so the
+plausible "50" was the cap, not the count), and haiku answered **7** even
+once the limit was pinned.
+
+**Model default: Sonnet 5** (CEO call, 2026-08-07). Haiku's saving is not
+worth a wrong answer, and the cheap path for plain data is `--raw` — no
+model at all — rather than a weaker model. Haiku stays reachable via
+`--model` for a passthrough the caller will eyeball, and `--bench` still
+compares the two on demand.
 
 ### Residual, not addressed
 
@@ -204,4 +217,5 @@ the spawn scripts' real `ENV_PREFIX` loop text rather than a paraphrase.
 `test_osc_surface_boundary`, `test_iterm_typewriter` all pass. A real `claude`
 run with the launcher's assembled argv called `mcp__org__list_projects` and
 returned 11. Bare-login-shell check derives all 33 tools; a broken venv exits
-1 and refuses to launch rather than silently emitting a short list.
+1 and refuses to launch rather than silently emitting a short list. The Sonnet
+5 default is confirmed live from `modelUsage` on a real borrow run.
