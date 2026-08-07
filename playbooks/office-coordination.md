@@ -1,147 +1,73 @@
-# Playbook — Office Simulator + desk coordination (LEGACY)
+# Office coordination — RETIRED 2026-08-07
 
-> ⛔ **Retired by [ADR-0007](../decisions/0007-deprecate-desk-pattern.md)
-> (2026-05-28).** Desks are gone: one repo = one folder, parallel work uses
-> branches + GH issue assignment, and path locks in `state/tasks.db` do what
-> desk claims used to. See
-> [`worktree-and-concurrent-sessions.md`](worktree-and-concurrent-sessions.md)
-> for how it actually works now.
->
-> Kept because `IRON-RULES §15` and several playbooks still link here. **Do not
-> build against it.** Flagged in the ADR-0013 Phase 6 cleanup.
+> **Status: unwired.** The four office hooks were removed from
+> `~/.claude/settings.json` on 2026-08-07 (CEO decision). The scripts still
+> exist on disk and nothing was deleted — this page records why they were
+> switched off and exactly how to bring them back.
 
+## What it was
 
-Live coordination of which agent sits at which webapp desk. Backed by:
-- Tables: `webapp_office_desks` + `webapp_office_claims` + `webapp_office_agents`
-- API: `/api/office/{state,claim,heartbeat,release}` + `/api/cron/office-sweep`
-- UI: `/admin/office-simulator`
-- Hooks: `~/.claude/hooks/office-{pretool,userprompt,stop}.mjs`
+A desk-claim + agent-messaging layer implemented as four Claude Code hooks:
 
-Full rules: [IRON-RULES §1 desk model](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`org:IRON-RULES.md`) + [§15 agent role + coordination](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`org:IRON-RULES.md`).
+| hook | event | job |
+|---|---|---|
+| `office-userprompt.mjs` | UserPromptSubmit | claim a desk, or heartbeat an existing claim |
+| `office-pretool.mjs` | PreToolUse (Write/Edit/Bash) | claim before first edit; could **deny** the tool if the desk was occupied |
+| `office-inbox.mjs` | UserPromptSubmit | fetch + ack unread messages, inject into context |
+| `office-stop.mjs` | Stop | release the desk claim |
 
-## One-time setup
+All four keyed off one cache file, `~/.claude/office-state-<cwdHash>.json`,
+which only `office-userprompt.mjs` could create — and only after a successful
+claim against `/api/office/claim` in mooniex-webapp.
 
-### 1. Generate + provision `OFFICE_TOKEN`
+## Why it was switched off
 
-```bash
-TOKEN=$(openssl rand -hex 32)
+The claim gate requires the cwd to resolve to a desk: a
+`mooniex-webapp (Desk-X)` folder, a `.desk` marker file, or the `MOONIEX_DESK`
+env var. **The Desk pattern was retired 2026-05-28 by ADR-0007** (one repo =
+one folder, parallel work via branches + GitHub issues). Once the desk folders
+went away, nothing could satisfy the gate, so every hook no-op'd on every turn.
 
-# Vercel
-printf "%s" "$TOKEN" | vercel env add OFFICE_TOKEN production
-printf "%s" "$TOKEN" | vercel env add OFFICE_TOKEN preview
+Measured 2026-08-07 before removal:
+- **Last successful desk claim: 2026-05-18** — 81 days earlier, and 10 days
+  before ADR-0007 landed. The timeline fits exactly.
+- Zero `Desk-*` folders anywhere under `Projects/` or `WarpClip Projects/`.
+- Zero `.desk` marker files.
+- `MOONIEX_DESK` unset.
+- No office cache for any current working directory.
 
-# Local hook config
-cat > ~/.claude/office.json <<EOF
-{
-  "api_base": "https://www.mooniex.com",
-  "token": "$TOKEN"
-}
-EOF
-chmod 600 ~/.claude/office.json
-```
+Superseded by the `mooniex-coord` MCP server (`send_message`, `read_inbox`,
+`list_active_agents`, `claim_message`), which does the messaging half without
+the desk-folder coupling.
 
-### 2. Apply migration (auto via db-migrate Action on push)
+**Note for anyone reading the 2026-08-06 architecture audit:** that document's
+finding W12 claimed these hooks fired two redundant API round-trips per turn.
+That was wrong — they fired *nothing*. Both the audit and the correction are
+recorded in `org:reference/2026-08-06-agents-system-audit.md`.
 
-The migration `202604290100__webapp_office_simulator.sql` ships with the next push. The Action applies it and the 3 default desks seed automatically. **Note**: the migration originally seeded `Desk-1`; a follow-up migration `202604290200__webapp_office_desk_1_to_a.sql` renames that row to `Desk-A` (see `MIGRATIONS.md` 2026-04-27 entry). Effective desk ids today: `Desk-A`, `Desk-B`, `Desk-C`.
+## Cost of leaving them wired
 
-### 3. Register Claude Code hooks
+Four `node` process spawns per turn that read a nonexistent cache file and
+exit. Cheap individually, pure waste collectively, and — for
+`office-pretool.mjs` specifically — a hook holding **deny** authority over
+every Write/Edit/Bash call while being dead code, which is the part actually
+worth removing rather than tolerating.
 
-Add to `~/.claude/settings.json` under `hooks` (merge with existing):
+## How to revive
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Write|Edit|Bash",
-      "hooks": [{
-        "type": "command",
-        "command": "node /Users/gob/.claude/hooks/office-pretool.mjs",
-        "timeout": 8
-      }]
-    }],
-    "UserPromptSubmit": [{
-      "hooks": [{
-        "type": "command",
-        "command": "node /Users/gob/.claude/hooks/office-userprompt.mjs",
-        "timeout": 5
-      }]
-    }],
-    "Stop": [{
-      "hooks": [{
-        "type": "command",
-        "command": "node /Users/gob/.claude/hooks/office-stop.mjs",
-        "timeout": 5
-      }]
-    }]
-  }
-}
-```
+Nothing was deleted. To bring it back:
 
-After save, open the Claude Code `/hooks` menu once (or restart) so the watcher reloads.
+1. Restore the hook entries into `~/.claude/settings.json` from the backup at
+   `~/.config/mooniex/settings.json.bak-pre-office-removal-20260807121323`, or
+   re-add them by hand (UserPromptSubmit ×2, PreToolUse `Write|Edit|Bash` ×1,
+   Stop ×1).
+2. Give the claim gate something to match — set `MOONIEX_DESK=Desk-CTO` in the
+   shell rc, drop a `.desk` file, or restore desk-named folders. **Reviving the
+   folder form means reversing ADR-0007** — decide that deliberately.
+3. Check `~/.claude/office.json` still holds a valid API token (the one present
+   at removal dated from 2026-04-26 and was never re-verified).
+4. Confirm the `/api/office/*` endpoints in mooniex-webapp are still live.
 
-### 4. Open the simulator
-
-`https://www.mooniex.com/admin/office-simulator`
-
-### 5. Assign roles
-
-Click each occupied desk → drawer → "Assign / edit role" → fill:
-- Display name (e.g. "Claude Opus 4.7 · Desk-A")
-- Role (e.g. "CTO" / "Senior Developer" / "ML Engineer" / "DevOps Engineer" / "QA Engineer")
-- Role brief — the 1-2 sentence the agent quotes when asked
-- Responsibilities — one per line
-- Scope tags — comma-separated
-
-Audit row written to `webapp_audit_log` on every save.
-
-## Daily flow (agent perspective)
-
-1. Open Claude Code in `/Users/gob/projects/mooniex-webapp (Desk-X)/`
-2. Start working — first `Write` / `Edit` / `Bash` triggers the PreToolUse hook → POST `/api/office/claim`
-3. If success: silently proceed
-4. If 409 occupied: hook blocks the tool with a `permissionDecision: deny` and an explanation. Agent reads the message, switches folder, retries
-5. Subsequent edits heartbeat (≤1/min)
-6. On `/clear`, `/resume`, compact, or normal exit: Stop hook releases the desk
-
-## "What's your role?" — agent answer pattern
-
-> "ผมรับหน้าที่ในตำแหน่ง **\[role from claim\]** — \[role_brief from memory\].
->
-> ความรับผิดชอบของผม:
-> - <responsibility 1>
-> - <responsibility 2>
-> - …
->
-> ขอบเขต: <scope tags>"
-
-If unassigned:
-> "ยังไม่ได้รับมอบหมายตำแหน่ง — admin ยังไม่ assign ใน `/admin/office-simulator`."
-
-## Force-release a stuck desk
-
-UI: `/admin/office-simulator` → click desk → drawer → "Force release". Writes a release with `reason=force` and audits.
-
-API:
-```bash
-curl -X POST https://www.mooniex.com/api/office/release \
-  -H "Authorization: Bearer $OFFICE_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"claim_id":"<uuid>","reason":"force"}'
-```
-
-## Failure modes
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Hook silent on first edit | `~/.claude/office.json` missing or token wrong | Re-run setup step 1 |
-| `permissionDecision: deny` blocking work | Desk occupied | Switch to `Desk-B` / `Desk-C`, or force-release if you know the other agent crashed |
-| Cron sweep not running | `OFFICE_TOKEN` not set in Vercel preview env | Add via `vercel env add` |
-| Heartbeats failing 404 | Cached `claim_id` was released by sweep | Hook auto-re-claims on next call |
-| Realtime not updating UI | RLS / publication missing | Migration adds the publication; verify with `select * from pg_publication_tables where tablename='webapp_office_claims'` |
-
-## What NOT to do
-
-- ❌ Edit `webapp_office_agents` directly to give yourself a role. Use the admin UI.
-- ❌ Read another agent's `~/.claude/projects/<other>/memory/` directory.
-- ❌ Skip the hook by exporting `OFFICE_TOKEN=""`. Coordination breaks silently.
-- ❌ Hardcode desk ids in business code — read from `webapp_office_desks`.
+Before reviving, decide what it buys over `mooniex-coord` — the MCP path
+already covers messaging, so the only unique capability here is desk-level
+mutual exclusion, which the branch + GitHub-issue workflow replaced.
