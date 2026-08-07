@@ -894,7 +894,7 @@ Previously evaluated and parked (see `reference_headroom_token_tool` memory) bec
 
 - **Banned:** em dash (—) as a clause-joiner in public/outbound copy — captions, landing pages, ad creative, LINE messages sent to users, any "voice of the brand" text.
 - **Not covered by this rule:** internal docs — wiki pages, ADRs, plans, this rules file itself — where em dash is just a formatting convention, not brand voice. The trigger for this rule was an internal analysis doc, but the rule targets public output, not internal notes.
-- Applies across all brands (MoonieX, WarpClip, LungNote, Chatudo) and all content skills (`mooniex-content-skill`, FB caption pipeline, ad copy).
+- Applies across all brands (MoonieX, WarpClip, LungNote, Chatudo) and all content skills (`mooniex-content`, FB caption pipeline, ad copy).
 - When editing/reviewing copy before it ships, scan for — and rewrite as a real Thai sentence break.
 
 > CEO (verbatim, 2026-08-03), pointing at a JTBD sentence CMO wrote: "ตัวนี้ มีแอทบจทั้งหมด ใน ประโยคเลย มันดูไม่เหมือน มนุษย์ พิม เลย ... ห้ามใช้ ในข้อความที่ต้อง Post หรือ เขียนในเว็ป หรือ ข้อความที่จะต้องส่งออกใน Public เด็ดขาด มันดูไม่เป็นมนุษย์ แล้วคนไทยไม่นิยมใช้กันในการ คั้น" — then repeated "—" alone several times to point at the exact character.

@@ -11,9 +11,9 @@ Skill `name:` (frontmatter + folder + install + wiki) = **lowercase-hyphenated**
 ## Skills (✅ all shipped 2026-06-05)
 | Skill | Domain | Sources merged | License |
 |---|---|---|---|
-| `mooniex-seo-skill` | SEO | claude-seo + ecc:seo + programmatic-seo | MIT (`b76459c`) |
-| `mooniex-growth-skill` | Growth / marketing-ops (ICP, positioning, pricing, paid+Meta ads, CRO, A/B, competitor, GTM, analytics) | 8 MoonieX-original + paid-advertising (MIT/AityTech) + analytics (MIT/Corey Haines) | MIT + MoonieX (`071e96c`) |
-| `mooniex-content-skill` | Content / copy (copywriting, editing, strategy, brand voice, channel, long-form) | MoonieX-original + ECC brand-voice/article-writing/content-engine (MIT) | MIT + MoonieX (`071e96c`) |
+| `mooniex-seo` | SEO | claude-seo + ecc:seo + programmatic-seo | MIT (`b76459c`) |
+| `mooniex-growth` | Growth / marketing-ops (ICP, positioning, pricing, paid+Meta ads, CRO, A/B, competitor, GTM, analytics) | 8 MoonieX-original + paid-advertising (MIT/AityTech) + analytics (MIT/Corey Haines) | MIT + MoonieX (`071e96c`) |
+| `mooniex-content` | Content / copy (copywriting, editing, strategy, brand voice, channel, long-form) | MoonieX-original + ECC brand-voice/article-writing/content-engine (MIT) | MIT + MoonieX (`071e96c`) |
 | `mooniex-tool-builder` | Build web tools + production UI | anthropics/skills web-artifacts-builder + frontend-design | **Apache-2.0** (`071e96c`) |
 
 ## ❌ EXCLUDED (proprietary — no permissive license; never shipped)
