@@ -1,6 +1,8 @@
 # MoonieX Console — mobile iTerm2 web console
 
 **Status:** ✅ LIVE + VERIFIED 2026-07-23 — real `claude` CLI backend confirmed working on Contabo itself (clean banner, correct tab id, real cogitation indicator "✻ Sautéed for Ns", no garbled text). GH issue #31 (onboarding blocker) closed. Also merged+deployed 2026-07-24: back button (chat→session list), session list already shows open sessions for resume, cross-device resume, device-tagged grouping (auto 5-char ID, e.g. `iPhone #KS87U`), iOS scroll fix, `.claude/skills/` synced to Contabo. Next: CEO confirms all of this live on both iPhones.
+
+**2026-08-07:** Fixed "UNKNOWN (N)" session-overview bucket — sessions started outside the Console (`spawn-cto.sh`/`spawn-cxo.sh` in the terminal) never got a `deviceLabel` row, since that's only ever written by the Console's own `createSession` flow. `bridge.js`'s `spawnAttach()` now backfills a box-derived label (`"Mac (terminal)"` / `"Contabo (terminal)"` via `os.hostname()`) the first time it notices one of these, without ever overwriting a real UI-set label. `src/tmux/{bridge,sessions}.js` + `src/db.js`, merged sha:22744a9 (task-81ebc285).
 **Owner:** CTO · **Requested by:** CEO 2026-06-11
 **Repo:** `PASAKON/MoonieX-Console` (own repo since 2026-08-03) · local `/Users/gob/Projects/mooniex-console`
 **Bookmark:** `https://mooniex-contabo.tail400676.ts.net:8443/`
