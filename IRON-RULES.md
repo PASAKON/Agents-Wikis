@@ -1013,6 +1013,17 @@ The gate, in order:
 Answer yes at step 2 or 3 → create the task with `role: browser_operator` and delegate.
 Do not run it in the C-level tab.
 
+**A loop is the strongest possible "yes" at step 3 — and it is never C-level work.**
+A recurring run, an overnight batch, or a `/loop` that fires the same browser prompt N
+times is not N independent one-off decisions. Evaluate the loop, not the iteration: the
+moment the work repeats, it belongs to `browser_operator`, and the first iteration's job
+is to produce the replay script so iterations two onward need no model at all. This
+matters more than any single task because the cost compounds in exactly the wrong place
+— every screenshot from every iteration accumulates in one C-level context and is
+re-sent on every later turn, which is the O(n²) case this section exists to prevent.
+`/loop` is a Claude Code skill and knows nothing about this rule; the C-level running it
+is the only thing standing between a long night and a very expensive one.
+
 **Why a separate role rather than doing it inline.** Screenshots are the single most
 expensive thing an agent accumulates, and they never leave the context — every later
 turn re-sends every earlier image. Running browser work in a C-level session pays that
