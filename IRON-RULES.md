@@ -991,3 +991,56 @@ Full conventions, measurements, and the graph presets live in
 the graph cannot draw, so the overview the CEO needed was never visible. Rules 1 to 4
 make structure render; rule 5 keeps it from rotting; rule 6 prevents a silent search
 failure that would make an agent believe the wiki is empty.
+
+---
+
+## Section 42 — A browser is a C-level decision, not a worker's (CEO directive 2026-08-10)
+
+**Hard rule.** Before any task touches a browser, the C-level that owns the task decides
+whether a browser is the right instrument, and — if it is — delegates the work to the
+`browser_operator` role. A C-level does not drive the browser itself for work it could
+delegate, and a worker never re-scopes a task onto or off the browser on its own.
+
+The gate, in order:
+
+1. **Does the target have an API?** If yes, the answer is not a browser. Hit the API.
+2. **Does the work need a session that is already logged in** — cookies, 2FA, a paid
+   dashboard? That is the one thing only the CEO's real Chrome has, and the only
+   honest reason to open one.
+3. **Will this run again?** If yes, the delegated task must require a replay script, so
+   run two onward costs no model at all.
+
+Answer yes at step 2 or 3 → create the task with `role: browser_operator` and delegate.
+Do not run it in the C-level tab.
+
+**Why a separate role rather than doing it inline.** Screenshots are the single most
+expensive thing an agent accumulates, and they never leave the context — every later
+turn re-sends every earlier image. Running browser work in a C-level session pays that
+on the most expensive model in the org, for the rest of the session. A worker spawned
+per task starts clean and dies with its images, which turns an O(n²) cost into O(n).
+
+**The cost is unbounded by configuration.** An image costs
+`ceil(width/28) × ceil(height/28)` visual tokens, and the harness does not cap it.
+Measured 2026-08-10 with a 314 KB fixture against a 1,000-token cap: a 200,000-character
+*text* result was truncated and persisted to a file, while the larger *image* passed
+through intact under both `MAX_MCP_OUTPUT_TOKENS` and
+`CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`. There is no setting to reach for. The only
+levers are shrinking the window before capture, reading pages as text, and ending the
+session — all of which live in the `browser-operator` skill.
+
+**Reviewing the output is also a browser decision.** A C-level that opens every returned
+screenshot moves the cost it just saved back onto the expensive model. Review a worker's
+run from its written report; open images in batches, and only when a visual judgement is
+actually in question.
+
+**Chrome access is granted by role, not by configuration file.** Claude in Chrome is a
+built-in CLI integration, not an entry in `dev.mcp.json`; `runners/dev_init.py` adds the
+`--chrome` flag and the Chrome tool allowlist for `browser_operator` alone. Verified
+2026-08-10: with `--strict-mcp-config` and no `--chrome`, the tools are absent entirely;
+`--chrome` makes them resolve while strict MCP stays on. Every other worker role is
+therefore browser-blind by construction, which is the intended default.
+
+**Why:** browser work used to have nowhere to run but a C-level tab, so the org paid
+Opus-tier prices for clicking buttons and kept the images forever. The decision and the
+execution were fused in one session; splitting them puts the judgement where the context
+is and the pixels where they are cheap to throw away.
