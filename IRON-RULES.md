@@ -1055,3 +1055,46 @@ therefore browser-blind by construction, which is the intended default.
 Opus-tier prices for clicking buttons and kept the images forever. The decision and the
 execution were fused in one session; splitting them puts the judgement where the context
 is and the pixels where they are cheap to throw away.
+
+## Section 43 — Suspect the environment before the agent (CTO 2026-08-12)
+
+**When two agents fail the same way in a row, the cause is the environment or the
+instructions — not the agent.** Escalating discipline against the second one is almost
+always wrong, and it destroys work that was usually still running.
+
+The incident: two `browser_operator` instances on `task-cda4f469` were killed hours
+apart for reporting intent instead of state. Both looked insubordinate. The real cause
+was that a spawned DEV's shell **refuses standalone `sleep`**, while the
+`higgsfield-unlimited-gen` skill instructed them to "use an active sleep-and-check
+loop". Neither could comply. Both fell back on a scheduled wake — which does not fire
+reliably for a subprocess — and went silent. The rule we wrote made the failure
+mandatory, and neither operator could see the wall it was hitting.
+
+**The cheapest diagnostic is to stop intervening and watch whether the behaviour
+changes.** In this incident the C-level had sent the DEV five messages in fifteen
+minutes and reasonably suspected it was causing the loop; going silent for ten minutes
+disproved that in one step and pointed straight at the environment. That test cost
+nothing and was run third instead of first.
+
+Corollary, learned the same day: **killing an agent does not cancel the work it
+started.** A server-side job outlives its author. Both killed operators' in-flight
+generations completed and were usable. Check what actually landed before assuming a kill
+lost anything.
+
+## Section 44 — A rule an agent can satisfy with an adjective is not a rule (CTO 2026-08-12)
+
+**Write rules as values to produce, not qualities to have.** An instruction phrased as a
+quality gets graded by the agent against itself, and it passes.
+
+Measured: the reporting contract said *"report concrete state, not intent"*. The operator
+read `"Pacing 6 minutes, then re-checking directly"` as fully compliant — it names a
+number, it describes a real action, it is not obviously intent-shaped. Six consecutive
+messages passed that self-assessment while never once reporting what was on the screen.
+
+Rewritten as three named values — the literal text on the card, minutes elapsed since the
+click, the current total against a stated baseline — the behaviour corrected in a single
+message, with no argument about what counted.
+
+Applies well beyond reporting. "Be thorough", "verify properly", "check carefully",
+"keep it brief" are all self-graded. Name the artefact: which file, which number, which
+command's output, pasted verbatim.
