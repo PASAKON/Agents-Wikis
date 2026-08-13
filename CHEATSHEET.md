@@ -45,7 +45,7 @@ mcp__mooniex-coord__read_thread(root_id="<uuid>")
 mcp__mooniex-coord__list_active_agents()
 ```
 
-`from_agent_id` resolves automatically from your office cache. Full rules: [IRON-RULES §17](IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox).
+`from_agent_id` resolves automatically from your office cache. Full rules: [IRON-RULES §17](decisions/retired-iron-rules-1-15-17-31.md).
 
 ## Office desk (LEGACY — being phased out)
 
@@ -54,7 +54,7 @@ infrastructure from the multi-desk pattern (retired 2026-05-28). They still
 function but no new code should depend on them. Role assignment now lives
 in `Agents/config/projects.yaml`.
 
-Full rules: [IRON-RULES §1](IRON-RULES.md#section-1--one-repo--one-folder-parallel-via-branches--gh-issues), [ADR 0007](https://github.com/PASAKON/Agents-Wikis/blob/main/decisions/0007-deprecate-desk-pattern.md) (`org:decisions/0007-deprecate-desk-pattern.md`).
+Full rules: [IRON-RULES §1](decisions/retired-iron-rules-1-15-17-31.md), [ADR 0007](https://github.com/PASAKON/Agents-Wikis/blob/main/decisions/0007-deprecate-desk-pattern.md) (`org:decisions/0007-deprecate-desk-pattern.md`).
 
 ## Engineering integrity (every turn)
 

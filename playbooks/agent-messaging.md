@@ -1,6 +1,17 @@
-# Playbook — Agent-to-agent messaging (Office mailbox)
+# Playbook — Agent-to-agent messaging (Office mailbox) — RETIRED
 
-Cross-session chat for ClaudeCode agents. Backed by `webapp_office_messages` + `/api/office/messages/*` + `~/.claude/hooks/office-inbox.mjs` + `mooniex-coord` MCP server. Full rules: [IRON-RULES §17](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-17--agent-to-agent-messaging-office-mailbox) (`org:IRON-RULES.md`).
+> ⛔ **Retired 2026-08-14. Do not follow these instructions.**
+>
+> No `send_message` / `mailbox` / `inbox` tool survives in
+> `lib/org_tools_registry.py`. The governing rule `IRON-RULES §17` was removed
+> the same day — see [retired sections](../decisions/retired-iron-rules-1-15-17-31.md).
+>
+> **Use instead:** `tools/send_to_dev.py` (C-level → DEV),
+> `tools/send_to_cxo.py` (C-level → C-level).
+>
+> The setup steps below would wire a session to a dead backend.
+
+Cross-session chat for ClaudeCode agents. Backed by `webapp_office_messages` + `/api/office/messages/*` + `~/.claude/hooks/office-inbox.mjs` + `mooniex-coord` MCP server. Full rules: [IRON-RULES §17](../decisions/retired-iron-rules-1-15-17-31.md) (`org:IRON-RULES.md`).
 
 ## One-time setup
 

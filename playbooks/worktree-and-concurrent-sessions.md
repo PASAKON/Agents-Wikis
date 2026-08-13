@@ -155,4 +155,4 @@ Still open (proposed, not shipped):
   `OFFICE_TOKEN`, claim/heartbeat lifecycle.
 - [agent-messaging.md](agent-messaging.md) — `mcp__mooniex-coord`
   failure recovery (covers the "cannot resolve sender" subtype).
-- [IRON-RULES §1](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-1--desk-model-one-agent-per-folder) (`org:IRON-RULES.md`) — desk model rule.
+- [IRON-RULES §1](../decisions/retired-iron-rules-1-15-17-31.md) (`org:IRON-RULES.md`) — desk model rule.

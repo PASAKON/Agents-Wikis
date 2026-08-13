@@ -14,7 +14,7 @@
 
 > Every agent that touches a `mooniex-webapp (Desk-*)` working copy
 > MUST claim the desk first, beat the heartbeat while working, and
-> release on stop. Per [IRON-RULES §15](https://github.com/PASAKON/Agents-Wikis/blob/main/IRON-RULES.md#section-15--agent-role-memory--office-simulator-coordination) (`org:IRON-RULES.md`).
+> release on stop. Per [IRON-RULES §15](../decisions/retired-iron-rules-1-15-17-31.md) (`org:IRON-RULES.md`).
 
 The PreToolUse / UserPromptSubmit / Stop hooks at
 `~/.claude/hooks/office-{pretool,userprompt,stop}.mjs` do this
