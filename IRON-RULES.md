@@ -208,6 +208,28 @@ Beyond Supabase basics:
 
 ## Section 15 — Agent role memory + Office Simulator coordination
 
+> ⛔ **RETIRED 2026-05-28 — everything below is history, not instruction.**
+> [ADR 0007](https://github.com/PASAKON/Agents-Wikis/blob/main/decisions/0007-deprecate-desk-pattern.md)
+> removed the desk model. `webapp_office_agents` is not read,
+> `/api/office/claim` is not called, `/admin/office-simulator` assigns
+> nothing, and no folder named `mooniex-webapp (Desk-X)` exists on disk.
+> The claim / heartbeat / release lifecycle described below does not run.
+>
+> **What holds now:** a session's role is the role it was spawned as
+> (`roles/<role>.md` + `config.agents()`); one repo lives in one folder;
+> parallel work uses branches and `git worktree`; a task is claimed through
+> its GitHub issue and its `tasks` row. See §1.
+>
+> **The one rule here that survives, and still binds:** an agent reads only
+> its own auto-memory — never another agent's
+> `~/.claude/projects/<other-cwd>/memory/`. The reasoning at the end of this
+> section is unchanged: two agents adopting one identity collide and corrupt
+> the audit trail.
+>
+> Kept rather than deleted because §17 and §23 still use this section's
+> vocabulary, and because a rule people may have memorised should be
+> visibly cancelled rather than quietly disappear.
+
 Goal: every Claude session has a **named role** (CTO, Senior Developer, ML Engineer, DevOps Engineer, QA Engineer) so its work doesn't collide with another agent's. The Office Simulator (`/admin/office-simulator`) is the live source of truth for who's at which desk; the agent's auto-memory holds the role brief the agent quotes when asked.
 
 ### Hard rules (agent role)
