@@ -120,8 +120,15 @@ Ours is a 3-file dance documented as a known trap.
 | Multi-tenant | ✅ board/tenant model | ❌ single tenant (MoonieX) |
 | Full event log | ⚠️ runs/log | ✅ 2,685-row `events` table |
 
-**This is the single biggest thing worth stealing.** Their dispatcher is exactly
-the "queue drains itself" property we do not have.
+> **SUPERSEDED 2026-08-13.** This section originally called the dispatcher the
+> single biggest thing worth stealing. It was rejected the same day — see
+> [ADR 0017](../decisions/0017-no-autonomous-task-dispatch.md). Every candidate
+> job for it turned out to be a script rather than an agent, and our constraint
+> is review capacity, not execution capacity: a dispatcher would convert a
+> backlog of "not started" into a backlog of "done but unreviewed".
+> The *janitorial* half of their design — stale-claim reclaim and
+> `failure_limit` auto-block — is still worth copying, and is explicitly
+> carved out of that ADR's ban.
 
 ### 2.5 Roles / org model
 
@@ -326,18 +333,32 @@ commit means we cannot cherry-pick upstream fixes; it is take-a-snapshot or use
 
 ### What Hermes does better than us (ranked by value to MoonieX)
 
-1. **Kanban dispatcher** — the queue drains itself. We have no autonomous pull.
-2. **Skill Curator** — usage telemetry + lifecycle + auto-archive. Our 61 skills
-   are unmeasured.
-3. **Provider portability** — 34 backends, one command. Our 3-source model
+*Ranking revised 2026-08-13 after the CEO review. The original list led with the
+Kanban dispatcher; that item is now rejected outright
+([ADR 0017](../decisions/0017-no-autonomous-task-dispatch.md)) and has been
+removed rather than demoted.*
+
+1. **Test mass** — ~17k tests vs a suite of ours that cannot even be run.
+   → [ADR 0021](../decisions/0021-testing-doctrine-and-critical-paths.md)
+2. **Skill Curator** — provenance + lifecycle + auto-archive, driven by usage
+   telemetry. We have the telemetry (351 records) and nothing reading it.
+   → [ADR 0018](../decisions/0018-skill-lifecycle-and-curator.md)
+3. **Session FTS5 search + self-nudged memory writes** — we hold 2.4 GB of
+   unreadable transcripts and write memory only when the model remembers to.
+   → [ADR 0019](../decisions/0019-memory-self-nudge-and-session-search.md)
+4. **`self_repo_guard` + `osv_check`** — our DEVs run in worktrees *of the
+   runtime that supervises them*, with nothing refusing a load-bearing write.
+   → [ADR 0020](../decisions/0020-runtime-self-protection-guards.md)
+5. **Provider portability** — 34 backends, one command. Our 3-source model
    config is a documented trap.
-4. **Messaging gateway** — 22 platforms from one process, LINE included.
-5. **Execution sandboxes** — docker/ssh/modal/daytona, not "run on the Mac".
-6. **Cron with `context_from` + `script` + hard interrupt.**
-7. **Session FTS5 search + self-nudged memory writes.**
-8. **Tool-loop guardrails** (warn at 2 failures, stop at 5).
-9. **`self_repo_guard` + `osv_check`.**
-10. **Test mass** — 17k vs ~0 on the runtime.
+6. **Tool-loop guardrails** (warn at 2 failures, stop at 5).
+7. **Messaging gateway** — 22 platforms from one process, LINE included.
+8. **Execution sandboxes** — docker/ssh/modal/daytona, not "run on the Mac".
+9. **Cron with `context_from` + `script` + hard interrupt.**
+10. **Stale-claim reclaim + `failure_limit` auto-block** — janitorial only,
+    explicitly permitted by ADR 0017.
+
+**Not taken:** the Kanban dispatcher itself (autonomous work origination).
 
 ### What we do better than Hermes
 
@@ -370,12 +391,18 @@ the worktree isolation, the merge gate, and the wiki — the parts that are
 actually ours — to gain a runtime we do not currently need, and it moves us off
 the Claude Max subscription onto per-token OpenRouter billing.
 
-**Do steal, in this order:**
-1. A dispatcher loop for `state/tasks.db` (their kanban dispatcher, ~60s tick,
-   stale-claim reclaim, `failure_limit` auto-block).
-2. Skill usage telemetry + a curator pass over our 61 skills.
-3. `tool_loop_guardrails` thresholds into DEV spawning.
-4. A `self_repo_guard` equivalent for the Agents repo.
+**Do steal, in this order** (ratified by the CEO 2026-08-13; each item has an ADR):
+1. **A runnable, isolated test suite + CI** — [ADR 0021](../decisions/0021-testing-doctrine-and-critical-paths.md).
+   Enabler: items 2–4 all modify the runtime.
+2. **Skill provenance + lifecycle + curator** — [ADR 0018](../decisions/0018-skill-lifecycle-and-curator.md).
+3. **Memory self-nudge + session FTS5 search** — [ADR 0019](../decisions/0019-memory-self-nudge-and-session-search.md).
+4. **`self_repo_guard` + `osv_check`** — [ADR 0020](../decisions/0020-runtime-self-protection-guards.md).
+
+Items 2 and 3 together close the learning loop:
+do work → write skill → telemetry → review → patch or archive.
+
+**Explicitly not taken:** the dispatcher —
+[ADR 0017](../decisions/0017-no-autonomous-task-dispatch.md).
 
 **Keep the install** as a research/parts box. It is 2.3 GB, idle, and costs
 nothing while not running. If it is ever pointed at real work, wire it to its
