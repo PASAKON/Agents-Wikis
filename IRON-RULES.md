@@ -768,8 +768,21 @@ section; only the general "bias toward acting" instructions in global `CLAUDE.md
 those are soft. When a real judgement call is needed and no one is watching the pane: queue
 it — `mcp__lungnote__add_todo` for something only the CEO can decide (surfaced at the next
 `/session-open`), or `send_to_cxo` mailbox for a question aimed at another C-level — and
-keep working on whatever does not depend on the answer. `AskUserQuestion` stays legitimate
-only in a session the CEO is actively driving right now (interactive chat).
+keep working on whatever does not depend on the answer.
+
+**Suspended org-wide, interactive sessions included (CEO 2026-08-14).** The first draft of
+this section carved out an exception for "a session the CEO is actively driving right now."
+The CEO closed that carve-out the same day:
+
+> "งดใช้ชั่วคราวไปก่อน ถ้ามีคำถามอะไร ถามแบบ Message ใน Chat ได้ ไม่จำเป็นต้อลใช้ แบบบล็อก"
+
+So: **do not call `AskUserQuestion` at all.** A question worth asking is worth writing as
+plain text in the reply — the CEO answers in their next message, which costs them a sentence
+instead of a modal and leaves the question searchable in the transcript instead of buried in
+a widget. The CEO marked this temporary ("ชั่วคราว"); it stays in force until the CEO lifts
+it explicitly, not until an agent decides its own situation feels special enough. A hard
+question, a risky action, or a real fork in the road does not re-authorize the blocking
+form — those are precisely the cases that deserve full prose rather than four option chips.
 
 **A second, unrelated gap found during the same check: auto-update prompts sit entirely
 outside `--permission-mode` and `--allowed-tools`.** `DISABLE_AUTOUPDATER` is a real env var
