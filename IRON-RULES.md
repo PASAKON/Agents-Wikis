@@ -10,7 +10,9 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > §23 engineering integrity · §29 visible DEV spawn · §30 DB table governance ·
 > §31 one CTO per repo · §32 tab title · §33 act only on tasks you own ·
 > §34 key registry · §35 session discipline · §36 CTO merges · §37 no crude
-> language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable wiki.
+> language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
+> wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
+> §44 rules as values not adjectives · §45 no blocking prompts unattended.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -731,3 +733,53 @@ message, with no argument about what counted.
 Applies well beyond reporting. "Be thorough", "verify properly", "check carefully",
 "keep it brief" are all self-graded. Name the artefact: which file, which number, which
 command's output, pasted verbatim.
+
+---
+
+## Section 45 — No unattended session waits on a click (CEO 2026-08-14)
+
+> CEO (verbatim): "เราจะป้องกันยังไง ไม่ให้ ORG + C-Level ให้ คำถามที่ผ่าน Iterms
+> และต้องกด คำตอบถึงจะทำงานต่อได้" — how do we stop ORG (workers) + C-level from
+> asking a question through iTerm that needs a click before work can continue.
+
+**Hard rule.** A session running unattended — a spawned worker, or a C-level tmux/iTerm
+session the CEO is not actively watching — must never call a tool that blocks on a live
+human answer (`AskUserQuestion` and anything with the same shape). A blocked session and
+a dead one look identical from outside: pid alive, no new commits, no new messages. That
+ambiguity is the whole cost — it turns a one-click unblock into a lost hour before anyone
+checks the actual pane.
+
+**Workers are already closed by construction — verified, not assumed.** `dev_tool_grants()`
+in `runners/dev_init.py` builds every DEV's `--allowed-tools` from `_BASE_DEV_TOOLS` plus a
+role's own additions; neither ever includes `AskUserQuestion`, `Agent`, or `Skill`. A worker
+cannot call what was never granted. The correct escape valves — `dev_message` and
+`request_human_handoff` — are already message-queue writes into a C-level's inbox, not a
+blocking TUI prompt; the worker keeps going or exits, it does not sit on a Y/N.
+
+**C-level carries the same tool-grant discipline, but the click-rule itself was unwritten
+until this section.** `scripts/cto-claude.sh` / `scripts/cxo-claude.sh` already run every
+tmux-launched C-level under three layers verified live on 2026-08-14: `--strict-mcp-config`
+(no ancestor-`.mcp.json` trust scan — the one real incident on record, see
+`runners/dev_init.py`'s `_root_mcp_server_names` docstring), an explicit `--allowed-tools`
+allowlist per role (`scripts/lib/cxo_mcp_config.py --print-allowed`), and
+`--permission-mode auto`. What those three layers do not cover is a C-level *choosing* to
+call `AskUserQuestion` mid-background-run — nothing technical stopped that before this
+section; only the general "bias toward acting" instructions in global `CLAUDE.md` did, and
+those are soft. When a real judgement call is needed and no one is watching the pane: queue
+it — `mcp__lungnote__add_todo` for something only the CEO can decide (surfaced at the next
+`/session-open`), or `send_to_cxo` mailbox for a question aimed at another C-level — and
+keep working on whatever does not depend on the answer. `AskUserQuestion` stays legitimate
+only in a session the CEO is actively driving right now (interactive chat).
+
+**A second, unrelated gap found during the same check: auto-update prompts sit entirely
+outside `--permission-mode` and `--allowed-tools`.** `DISABLE_AUTOUPDATER` is a real env var
+— confirmed present in the installed `claude` binary's strings (`/Users/gob/.local/share/
+claude/versions/*`) — and as of 2026-08-14 it is set in none of `scripts/cto-claude.sh`,
+`scripts/cxo-claude.sh`, or `runners/dev_init.py`. An update-available prompt is a startup-
+level interrupt, not a tool-permission check, so no amount of `--allowed-tools` tuning
+reaches it. Set `DISABLE_AUTOUPDATER=1` in all three launchers to close it.
+
+**Why:** the org's whole autonomy model — mailbox+wake (§17-adjacent, `lib/mailbox.py`,
+2026-08-14), no progress pings (§29's worker rules), the watchdog (GH #68) — assumes a
+silent session is either working or dead, never a third state waiting on a button only a
+human can press. A blocking prompt breaks that assumption invisibly.
