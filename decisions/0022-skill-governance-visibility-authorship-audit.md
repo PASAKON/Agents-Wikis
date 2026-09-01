@@ -90,7 +90,7 @@ Because `flagSettings` outranks `localSettings`, a `--settings` file passed by
 the spawner **outranks the `settings.local.json` a worker holds in its own
 worktree**. A worker cannot lift its own cage.
 
-**This corrects a standing belief.** Our記録 that `skillOverrides: "off"` does not
+**This corrects a standing belief.** Our standing record that `skillOverrides: "off"` does not
 save context came from testing ECC skills, which are plugin skills and therefore
 exempt. The mechanism was real; the generalisation was not.
 
