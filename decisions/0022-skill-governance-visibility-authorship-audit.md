@@ -1,7 +1,7 @@
 # ADR 0022 — Skills get a per-role audience, open authorship, and git as their undo
 
 - **Date:** 2026-09-01
-- **Status:** Accepted (three items flagged for CEO sign-off, see §9)
+- **Status:** Accepted. All three §9 items **approved by the CEO on 2026-09-01**.
 - **Decider:** CEO, with CTO refinements accepted in session
 - **Supersedes:** [ADR 0018](0018-skill-lifecycle-and-curator.md) §6, which put
   agent-authored skill creation out of scope. This ADR reverses that.
@@ -330,7 +330,10 @@ sentence goes in `skill-author` verbatim.
 
 ---
 
-## 9. Needs CEO sign-off
+## 9. Sign-off items — all three APPROVED by the CEO, 2026-09-01
+
+The CEO reviewed and accepted all three as written. They are no longer open questions;
+they are decisions, and the implementation spec builds on them.
 
 1. **Prefix on new skills only.** Renaming the existing 21 dangles symlinks,
    orphans 284 fires and touches 39 files, for no machine-readable gain. Proposal:
