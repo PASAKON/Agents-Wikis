@@ -86,6 +86,23 @@ So **`skillOverrides` for normal skills, `enabledPlugins` for plugin skills**,
 with keys `<plugin>@<marketplace>` read verbatim from
 `~/.claude/plugins/installed_plugins.json`.
 
+> **CORRECTION, 2026-09-01, after implementation.** The −38.6% figure above is
+> **not reachable** and this section overstated the payoff. `enabledPlugins:
+> false` on `ecc@ecc` disables GateGuard's `gateguard-fact-force` hook along with
+> its skills — the hook is registered inside ecc's own `hooks/hooks.json` bundle.
+> Proven by live A/B, and locked in by
+> `scripts/test_skill_visibility.py::test_worker_baseline_never_disables_gateguard_bundle`.
+> ecc owns 92 of the 113 plugin skills, so the shipped profile disables three
+> plugins and delivers **−9.7% skills / −0.2% tokens** (186→168 skills,
+> 39,993→39,924 tokens, measured).
+>
+> Phase 2 is capped by the same fact: plugin skills bypass `skillOverrides`, so
+> ecc's 92 skills cannot be hidden that way either. **The real prize is
+> extracting GateGuard out of the ecc bundle into our own hooks**, after which ecc
+> can be disabled wholesale and the original projection becomes reachable. Until
+> then, per-role visibility is worth far less than this ADR assumed — the
+> governance value stands, the cost argument does not.
+
 Because `flagSettings` outranks `localSettings`, a `--settings` file passed by
 the spawner **outranks the `settings.local.json` a worker holds in its own
 worktree**. A worker cannot lift its own cage.
