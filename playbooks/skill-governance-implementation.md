@@ -191,6 +191,32 @@ Mechanism and measurements: ADR 0022 §2. It is **proven on Claude Code 2.1.252*
 not assumed — re-verify on the installed version before shipping, and make the
 version check a test, because this is the one part an upgrade can silently break.
 
+### ⚠️ Measured outcome of Phase 1 (2026-09-01) — read before planning Phase 2
+
+`ecc@ecc` **cannot be disabled.** GateGuard's `gateguard-fact-force` hook is
+registered inside the ecc plugin's own `hooks/hooks.json` bundle, so
+`enabledPlugins: false` kills the hook along with the skills. Proven by live A/B
+with a fresh `claude` subprocess each way, not by inspection. It is locked in by
+`scripts/test_skill_visibility.py::test_worker_baseline_never_disables_gateguard_bundle`.
+
+ecc owns **92 of the 113 plugin skills**, so the shipped profile disables three
+plugins, not four, and the real saving is:
+
+| Config | Skills | Tokens |
+|---|---|---|
+| Baseline | 186 | 39,993 |
+| All 4 plugins off (unsafe — GateGuard dies) | 76 | 34,915 |
+| **Shipped (3 off, ecc kept)** | **168** | **39,924** |
+
+**−9.7% skills, −0.2% tokens.** ADR 0022 §2's −38.6% projection assumed ecc could
+go; it cannot.
+
+**This also caps Phase 2.** Plugin skills bypass `skillOverrides` entirely, so
+ecc's 92 skills cannot be hidden by that lever either. The only route to the big
+number is **extracting GateGuard out of the ecc bundle into our own hooks**, after
+which ecc can be disabled wholesale. Treat that as the real prize; Phase 2's
+per-skill lists are worth much less than the ADR implied until it is done.
+
 ### Phase 1 — plugins only
 
 - `policies/skill-visibility/worker-baseline.json`, checked in:
@@ -341,5 +367,13 @@ regardless of this ADR.
 | skill-report columns + objection tool | developer | 4 | 1, 2 |
 | skill-author doctrine rewrite | prompt_engineer | 5 | 1 |
 
-Waves 1 and 3 Phase 1 both touch `runners/worker_init.py`. **Serialize them** —
-the lock layer ignores `depends_on`, so overlapping `touches` will collide.
+**Correction, 2026-09-01.** An earlier version of this table said Waves 1 and 3
+Phase 1 both touch `runners/worker_init.py` and must be serialized. That was
+wrong — Wave 1 never touches it (Wave 0 did, and Wave 0 merged first). The two
+ran concurrently with disjoint locks and no collision. Verify a claimed overlap
+against the actual declared `touches` before serializing; needlessly serialising
+waves costs real wall-clock.
+
+The role column above also originally read `devops_engineer` for Waves 0 and 3.
+Both shipped as `developer`, because the deliverable was Python plus pytest, not
+infrastructure. Role follows the deliverable, not the topic.
