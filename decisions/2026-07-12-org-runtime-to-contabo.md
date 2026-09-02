@@ -25,3 +25,38 @@ The auto-mode classifier repeatedly and correctly caught the CTO overstepping na
 
 ## Follow-up (not blocking, tracked in `projects/mooniex-console.md`)
 Fix the WebAuthn bootstrap-creation-order bug (`console/src/auth/routes.js`'s `resolveOperatorForEnrollment` creates the operator row before the credential is verified) — low priority, workaround (register on-device, no cross-device QR) is known and documented.
+
+---
+
+## BLOCKER for Phase B — found 2026-09-02, not yet fixed
+
+`config/worker.mcp.json` and `config/cto.mcp.json` are **git-tracked with
+absolute Mac paths** hardcoded in three fields each:
+
+```
+"command": "/Users/gob/Projects/Agents/.venv/bin/python"
+"args":  ["/Users/gob/Projects/Agents/runners/worker_mcp_server.py"]
+"cwd":     "/Users/gob/Projects/Agents"
+```
+
+plus `"/Users/gob/LungNote Projects/mcp/index.js"` for the lungnote server.
+
+On Contabo this repo lives at `/opt/mooniex-agents`, so **every worker spawned
+there gets a broken MCP wiring** — no org tools, no LungNote. It fails at spawn,
+not at build, so nothing catches it until a worker is actually started on that box.
+
+**Deliberately not fixed on 2026-09-02.** These files sit on the hottest path in
+the org — every worker and every C-level spawn reads them — and the benefit is
+entirely deferred, since Phase B has not started and no worker runs on Contabo
+yet. Changing the spawn path to buy a benefit we cannot yet use, on a day with
+live generation queues running, is the wrong trade.
+
+**The fix, for whoever starts Phase B:** generate these configs at spawn time
+into the worktree from a template with the derived repo root substituted, the
+same way `runners/worker_init.py:_write_dev_settings()` already writes
+`settings.local.json`. Do **not** hand-edit the tracked JSON to a second
+hardcoded path — that just moves the bug. Derive the root; add a test that
+asserts no absolute `/Users/` or `/opt/` literal survives in the generated file.
+
+Found by the ADR 0022 Wave 4 worker, which correctly flagged it as out of scope
+rather than fixing it inside an unrelated task.
