@@ -796,3 +796,51 @@ reaches it. Set `DISABLE_AUTOUPDATER=1` in all three launchers to close it.
 2026-08-14), no progress pings (§29's worker rules), the watchdog (GH #68) — assumes a
 silent session is either working or dead, never a third state waiting on a button only a
 human can press. A blocking prompt breaks that assumption invisibly.
+
+## Section 46 — A rented GPU is watched until it is dead (CEO 2026-09-03)
+
+> "กฏเหล็กเลย อันนี้สำคัญมาก Runpod ถ้าเลิกใช้แล้ว ให้ปิดทันที ถ้างานเสร็จให้ปิด งานค้าง
+> ให้เชคตลอด ทุกๆ ... นาที ที่ตั้งไว้ ทุกครั้งที่รัน Runpod จะต้อง Loop ตัวเองเพื่อมาเชค
+> จนกว่าจะปิด Pod ถึงจะ Cancel Loop ได้"
+>
+> "ตัวเองมีหน้าที่รับผิดชอบมัน"
+
+Rented compute is the one thing in this org that keeps spending money after the
+agent that started it has stopped paying attention. The rule is therefore not
+"remember to clean up" — it is a loop that outlives the job.
+
+**Four obligations, every time a pod is created:**
+
+1. **Finished means terminated.** The moment the work is done, or abandoned, or
+   the answer is known, the pod dies. Not at the end of the message, not after
+   the next check — then.
+2. **A running job is checked on a fixed interval**, and the interval is stated
+   when the run starts, so "how long has this been burning" is never a guess.
+3. **The check is a LOOP THAT RUNS UNTIL THE ACCOUNT IS EMPTY**, and only then
+   may it be cancelled. A loop cancelled while a pod still exists has not
+   finished its job; it has abandoned it.
+4. **The loop is a separate process from the job.** The trainer already
+   terminates on atexit, on signals, and on a hard cap — none of which fire when
+   the trainer itself is killed (`tmux kill-session`, a crashed shell, a laptop
+   asleep). That is precisely the case the loop exists for, so it must not
+   depend on the thing it is guarding.
+
+**When another loop is already running**, retune it to a cadence that also
+covers the pod check for the duration of the run, and restore its original
+cadence only after the pod is confirmed gone. The pod check takes precedence
+while a pod exists.
+
+**Implementation** (Cookie Run lane, reusable pattern):
+`cookierun-bot/vision/runpod_guard.py` — `--every` seconds, `--max-age` minutes,
+`--now` for a single check, `--kill-all` to empty the account. It exits only
+after seeing zero pods twice in a row, because a pod that is mid-creation can
+briefly not appear in the listing and stopping on that would leave it running
+with nothing watching.
+
+**Two facts learned the day this rule was written**, both worth carrying to any
+provider: COMMUNITY-cloud pods can be rented, billed, and never given a public
+IP (`publicIp: ""`, `machine: {}` in the API, with `supportPublicIp: true` in
+the request) — they are unreachable and useless while still costing money, so
+cap the wait for an SSH mapping and drop them fast. And the balance keeps
+settling for a minute or two AFTER termination, so the figure read immediately
+on shutdown is not the final cost.
