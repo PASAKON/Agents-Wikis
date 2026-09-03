@@ -12,7 +12,8 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > §34 key registry · §35 session discipline · §36 CTO merges · §37 no crude
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
-> §44 rules as values not adjectives · §45 no blocking prompts unattended.
+> §44 rules as values not adjectives · §45 no blocking prompts unattended ·
+> §46 a rented GPU is watched until dead · §47 check the research library first.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -844,3 +845,49 @@ the request) — they are unreachable and useless while still costing money, so
 cap the wait for an SSH mapping and drop them fast. And the balance keeps
 settling for a minute or two AFTER termination, so the figure read immediately
 on shutdown is not the final cost.
+
+---
+
+## Section 47 — Research is checked before it is commissioned, and filed when it is done (CEO 2026-09-03)
+
+> "Agentic ของเรามีที่เก็บ Research แล้วไหม ... เพราะทุกอย่างที่เรา Research มาจะได้ไม่เสียเปล่า
+> ไม่ต้องไปค้นหาใหม่ หยิบจากคลังมาใช้ได้เลย"
+
+On 2026-09-03 five research workflows ran in one session. Three left something
+behind in a repo. Two existed nowhere but a temp directory — including a
+ten-agent, ~1.1M-token sweep of how Seedance prompts are actually structured,
+whose most valuable finding was that a "six-part formula" repeated across dozens
+of sites has no primary source behind it at all. A `/tmp` cleanup would have
+erased it, and the next person to ask would have paid to find it again.
+
+**The library is `org:research/`.** One page per question answered, named
+`YYYY-MM-DD-short-question.md`. Its README carries the conventions.
+
+**Before commissioning research — any C-level, every time:**
+
+1. **Read `org:research/` first.** If the question is answered there, use the
+   answer. Spending tokens to re-derive a finding the org already owns is waste,
+   and it is invisible waste, which is worse.
+2. **If it is answered but the page is old enough to doubt**, re-run only the
+   parts that could have moved and **update that page in place**. Do not write a
+   second page on the same question — two pages disagreeing is how a library
+   stops being trusted.
+3. **If it is not there, commission it** — and the task is not complete until
+   the finding is filed.
+
+**Every research page states how each claim is known:** `official` (read at the
+vendor's own docs), `practitioner` (a named person reporting what they did),
+`secondhand` (a site repeating it without a source), `inference` (our own
+reasoning). This is not bookkeeping. It is the level that revealed the six-part
+formula was folklore, and it is what lets a reader six months later judge how
+much weight a claim carries.
+
+**And every page carries its provenance** — when it ran, which session, the
+workflow run id, how many agents, whether findings were adversarially re-checked.
+A finding about someone else's product goes stale without the file changing, so
+the date is part of the claim.
+
+**The filing is automated, not remembered.** `scripts/research-file.py` takes a
+workflow run and writes the page. A rule that depends on somebody thinking of it
+at the end of a long session is a rule that fails on exactly the long sessions
+where it matters most.
