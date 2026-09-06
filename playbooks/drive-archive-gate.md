@@ -13,6 +13,8 @@ an agent moves them only after the CEO says go on a specific alert.
 | `~/Backups/**` | `Archive/Backups/<same relative path>` | VPS backups; keep folder names and dates |
 | `~/Projects/Agents/output/**` | `Archive/Agents-output/<same relative path>` | generated deliverables (b-roll, prompts) |
 | Claude transcripts | `Claude-Transcripts/<project>/<uuid>.tar.gz` | only via `prune_transcripts.py --archive`, never by hand |
+| `winbox: Documents/CookieRunScript/play_rec/<take>/` (CEO's recorded Cookie Run takes) | `BACKUP/CookieRun Backup/play_rec/<take>.tar` + `<take>.manifest.json` | CEO-approved 2026-09-06; one tar per take (never loose frames), sha256 manifest, uploaded from the box with rclone (`gdrive:` remote, scope drive.file), verified with `rclone check`; steward brief `cookierun-bot/docs/DATA-STEWARD.md` |
+| `winbox: Documents/CookieRunScript/play_rec/bot_session-*/`, `playset/*` (bot recordings, training sets) | `BACKUP/CookieRun Backup/bot_sessions/`, `.../playsets/` | same rules; proposed 2026-09-06, file only after the CEO OKs each batch |
 
 Anything not in this table needs a new row approved by the CEO first. The
 Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com/ไดรฟ์ของฉัน`
