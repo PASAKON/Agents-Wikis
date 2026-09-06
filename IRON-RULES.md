@@ -953,3 +953,30 @@ Tool, policy and log paths above are the single source; do not copy the
 numbers into other pages.
 
 **Gate rule, filed:** [drive-archive-gate](https://github.com/PASAKON/Agents-Wikis/blob/main/playbooks/drive-archive-gate.md) (`org:playbooks/drive-archive-gate.md`) — the wiki page is the canonical copy of the `drive-archive-gate.md` named in point 3; the file next to the tool mirrors it.
+
+## Section 49 — Google Drive: the skill is the rule, and a hook holds the door (CEO 2026-09-06, owner CTO)
+
+On 2026-09-06 a CTO session backed up Cookie Run data to Drive after reading
+Google's own limits page — and never opened `gdrive-filing`, the org's filing
+skill. The tar landed in a new root folder, unasked, against the skill's first
+three rules. The CEO's words: *"ถ้าจะใช้งาน Gdrive อ่าน Skills นี้ก่อนเสมอ มันเป็นกฏ"*.
+
+1. **Before any Drive action — upload, backup, move, rename, delete, create a
+   folder, by rclone, the gdrive-bridge, the Drive MCP or a synced folder —
+   the session reads `.claude/skills/gdrive-filing/SKILL.md`.** Google's
+   limits are facts about Google; the skill is the rule about *our* Drive.
+2. **A PreToolUse hook enforces it** (`scripts/hook-gdrive-skill-gate.py`,
+   registered in the Agents repo's `.claude/settings.json`): every
+   Drive-touching call exits 2 until the skill has been read in that session
+   (Skill tool, Read, or a Bash that opens the file); the reading expires after
+   12 hours. `GDRIVE_GATE=off` is for repair only and is named in the report.
+3. **What moves off a machine goes through the gate table** in
+   `playbooks/drive-archive-gate.md` (Section 48): a row per source, approved
+   by the CEO, copy → verify by hash → delete, one log line each.
+4. **Tokens:** an agent holds the narrowest Drive credential that does the job.
+   The Windows box's rclone remote is re-authorised with scope `drive.file`
+   (sees only what it created); a full-scope token is a CEO decision, never a
+   default.
+5. **Same-turn bookkeeping:** any folder created or moved updates the skill's
+   tree and ID table in the same turn, and the updated subtree is pasted back
+   to the CEO (skill rule 6).
