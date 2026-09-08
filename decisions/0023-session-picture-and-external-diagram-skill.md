@@ -24,7 +24,7 @@
 
 3. **Created only at the first `/session-worktree`, then patched.** Never at `/session-open`, never unasked (HARD rule in the skill). Later runs send a **delta** (`{"set": {"G2.3": "done"}, "here": "G2.4", "add": …}` — 1–3 lines); the script merges, stamps, re-renders and the Artifact tool republishes the **same URL** (stable basename = session id). This is where the tokens are saved: no retyped tree, no resent map, no image ever read back by the model.
 
-4. **Delivery = one Artifact link, last line of the reply.** The CEO's answer to "why SomPong, why a PNG": the link opens on any device, zooms crisply, stays private until shared, and never lands in the secretary's chat. One page holds two maps — wide (desktop, left→right) and narrow (phone, stacked) — switched by a media query. Chat output shrinks to the script's status block (📊 counts · 📍 here · 🔴 blockers) + a 5–8 line plain recap + the link. `show --tree` prints the old text tree only when asked. Telegram (`--png --send`) stays an opt-in.
+4. **Delivery = one Artifact link, last line of the reply.** The CEO's answer to "why SomPong, why a PNG": the link opens on any device, zooms crisply, stays private until shared, and never lands in the secretary's chat. **One layout only — horizontal, left→right** (CEO 2026-09-09: "แนวนอนอย่างเดียว"); a phone scrolls the map sideways inside its own frame. A responsive stacked variant was built and removed the same night — one layout is what the CEO wants to read, and dead code is a maintenance cost. Chat output shrinks to the script's status block (📊 counts · 📍 here · 🔴 blockers) + a 5–8 line plain recap + the link. `show --tree` prints the old text tree only when asked. Telegram (`--png --send`) stays an opt-in.
 
 5. **Labels in English, content as typed** (chips, legend, START/DETOUR/PARKED) — the design system's mono uppercase register; Thai node text uses Noto Sans/Serif Thai at ≥10px.
 
@@ -37,6 +37,6 @@
 
 ## Verification
 
-- `scripts/test_session_diagram.py` — 13 tests: files + status text, accessible-SVG contract on both maps + upstream `self_check.py`, 4px grid, patch merge + auto-stamping, status inference + here auto-advance, refs/cycles/errors, both detour kinds, escaping/truncation, tree + status text, artifact body, Telegram size cap, CLI map→patch→show. Green under the `__main__` harness and pytest.
-- First real map: session cto-576f0aff, 2026-09-09 (this session's own history: 4 goals, 12 tasks, 3 detours), `check: OK`, published as the session's Artifact.
-- Commits on Agents `main`: 1ca64bd (v1, Telegram PNG), c3d5d2b (v2, Artifact link), and the v3 session-map commit of 2026-09-09.
+- `scripts/test_session_diagram.py` — 13 tests: files + status text, accessible-SVG contract + upstream `self_check.py`, 4px grid, patch merge + auto-stamping, status inference + here auto-advance, refs/cycles/errors, both detour kinds, escaping/truncation, tree + status text, artifact body, Telegram size cap, CLI map→patch→show. Green under the `__main__` harness and pytest.
+- First real map: session cto-576f0aff, 2026-09-09 (this session's own history: 4 goals, 12 tasks, 3 detours), `check: OK`, published as the session's Artifact and republished on the second run.
+- Commits on Agents `main`: 1ca64bd (v1, Telegram PNG), c3d5d2b (v2, Artifact link), 2cf76ba (v3, the session map), plus the horizontal-only follow-up of 2026-09-09.
