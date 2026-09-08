@@ -1,33 +1,42 @@
-# ADR 0023 — `/session-worktree` ends with a picture; `diagram-design` is an external skill
+# ADR 0023 — `/session-worktree` ends with a session map; `diagram-design` is an external skill
 
-- **Date:** 2026-09-08
-- **Status:** Accepted — CEO ask 2026-09-08: "เอามาใช้เป็น Skill ได้ไหม ใน session-worktree อยากให้ทำเป็น diagram ส่งมาด้วย ในบรรทัดสุดท้าย … เราจะได้เห็นภาพรวมของทั้ง session เป็น diagram เลย"
+- **Date:** 2026-09-08, amended 2026-09-09 after two rounds of CEO design questions
+- **Status:** Accepted
 - **Decider:** CEO; design and build by CTO, session cto-576f0aff
-- **Related:** [ADR 0018](0018-skill-lifecycle-and-curator.md) (external skills are symlinks the curator never touches), IRON §32 (tab as live status), CEO order #38 (media to the CEO as a real file)
+- **Related:** [ADR 0018](0018-skill-lifecycle-and-curator.md) (external skills are symlinks the curator never touches), IRON §32 (tab as live status), IRON §35 (one session, one problem; park the rest)
 
 ## Context
 
-`/session-worktree` printed two text views — the 🌳 tree for the CTO and the 📋 plain recap for the CEO. The CEO wants the whole session as **one picture on the phone**.
+`/session-worktree` printed two text views — a 🌳 tree for the CTO and a 📋 recap for the CEO. The CEO wants the whole session as **one picture**, and said what it must show (2026-09-09): "ซ้ายคือเริ่มต้น session — CEO ต้องการอะไร → มี task อะไรบ้าง ในแต่ละ block มี task ย่อย 1 2 3 4 5 แต่ละอันเสร็จหรือยัง → block ต่อไปติด task ก่อนหน้า … goal อาจต่อกันหรือแยกกันคนละเส้น … บอกได้ว่าตอนนี้อยู่จุดไหน ออกนอกเส้นทางไปทางไหน" — and asked for questions first, a design meant to last, and **token economy as the first constraint**.
 
-The CEO pointed at [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, 34k★, v2.6.17): an opinionated editorial diagram system — 39 visual types, a skinnable token set (`references/style-guide.md`), a 4px grid, mandatory orthogonal r=8 connectors, an accessible-SVG contract, and its own validator `scripts/self_check.py`. Output is a single self-contained HTML file (inline SVG + CSS, Google Fonts only). A trial diagram — the org task lifecycle as a swimlane — passed its validator and rendered correctly, so the system is real, not a prompt.
+[cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, v2.6.17) is an opinionated editorial diagram system: tokens, 4px grid, mandatory orthogonal connectors, accessible-SVG contract, its own validator. A trial swimlane passed its validator and looked right.
 
-## Decision
+## Decisions
 
-1. **Install `diagram-design` as an external skill, not vendored into the repo.** Clone under `/Users/gob/Projects/external/diagram-design`, **pinned at sha 2724fd2 (v2.6.17)**; symlink `~/.claude/skills/diagram-design → <clone>/skills/diagram-design`. Same pattern as 9arm / wondelai; the curator refuses symlinks (ADR 0018 §4.3), so it can never patch upstream. Updates are deliberate: `git fetch && git checkout <sha>` — never track `main`. The skill's first-run "customise the style guide?" gate is answered here: **default skin, on purpose**; a MoonieX token profile is a separate, CEO-facing decision.
-2. **The model writes facts, a script owns geometry.** `tools/session_diagram.py` takes the session tree as JSON on stdin (entry problem, DoD, nodes with `done|doing|todo|blocked` + work-type tag + evidence + `blocked_on`) and renders a vertical tree in the diagram-design system: node treatment from the SKILL.md §5 table plus the kanban card states (done = store, doing = focal + `◀ HERE`, todo = optional dashed, blocked = accent bar + reason), Instrument Serif / Geist / Geist Mono with Noto Thai for Thai text, legend strip + counts, `<title>/<desc>` contract. `--print-tree` emits the 🌳 text in the skill's exact format, so view 1 and the picture come from one source and cannot disagree. A hand-drawn diagram costs ~15 minutes of SVG per picture; the script costs 5 seconds.
-3. **Delivery is a Telegram photo** through `lib.telegram_out.send_media_to_ceo` (`--send`): a real file, never a link (CEO order #38). The chat stays text (memory `cto-chat-text-output`); the **last line** of the worktree is the PNG path plus the script's own `telegram:` verdict — `ok` is the only thing that counts as sent.
-4. **PNG via the Chrome CLI, not Playwright.** Playwright is not installed and upstream's `export.md` says not to auto-install it. Headless Chrome `--screenshot` renders the fonts correctly but never exits on macOS (its updater child) — the script polls for the file, then terminates Chrome. Scale is lowered automatically so Telegram's `sendPhoto` cap (width + height ≤ 10000 px) holds.
-5. **Where Chrome is absent** (Contabo today), the script skips the PNG and sends the HTML as a document, and the skill says so plainly.
+1. **`diagram-design` is installed as an external skill, not vendored.** Clone at `/Users/gob/Projects/external/diagram-design`, **pinned at sha 2724fd2 (v2.6.17)**; symlink `~/.claude/skills/diagram-design → <clone>/skills/diagram-design`. Same pattern as 9arm / wondelai; the curator refuses symlinks (ADR 0018 §4.3). Updates are deliberate (`git fetch && git checkout <sha>`), never tracking `main`. Default skin, on purpose (CEO 2026-09-09); a MoonieX token profile is a separate decision. `~/.claude/CLAUDE.md` routes standalone diagram deliverables here; Mermaid is not a shipped visual.
+
+2. **The model writes facts, a script owns geometry and time.** `tools/session_diagram.py` keeps **one JSON per session** (`state/session-diagrams/<session>.json`, gitignored) and renders it in the diagram-design system. Vocabulary (answers to the design questions):
+   - **Goal** = one thing the CEO asked for (เรื่องที่ CEO สั่ง); the charter's Entry Problem is usually G1; DoD items are its tasks. `depends_on` = must follow another goal (arrow); none = a separate line (own row).
+   - **Task** = a step with a checkbox, a work-type tag, evidence when done, a reason when blocked.
+   - **Detour** = work that left the path: `interrupt` (had to be done, then back on the line — drawn with a return arrow) or `parked` (raised, not done here, sent to LungNote — drawn to a dead end ⊥).
+   - **here** = the task/goal being worked on (`◀ HERE`, orange focal block).
+   - **Time** = start→finish + minutes per block, **stamped by the script** on status transitions (doing/blocked start the clock, done stops it; items already done when the map is created stay timeless rather than pretending 0 min). Goal times derive from tasks.
+
+3. **Created only at the first `/session-worktree`, then patched.** Never at `/session-open`, never unasked (HARD rule in the skill). Later runs send a **delta** (`{"set": {"G2.3": "done"}, "here": "G2.4", "add": …}` — 1–3 lines); the script merges, stamps, re-renders and the Artifact tool republishes the **same URL** (stable basename = session id). This is where the tokens are saved: no retyped tree, no resent map, no image ever read back by the model.
+
+4. **Delivery = one Artifact link, last line of the reply.** The CEO's answer to "why SomPong, why a PNG": the link opens on any device, zooms crisply, stays private until shared, and never lands in the secretary's chat. One page holds two maps — wide (desktop, left→right) and narrow (phone, stacked) — switched by a media query. Chat output shrinks to the script's status block (📊 counts · 📍 here · 🔴 blockers) + a 5–8 line plain recap + the link. `show --tree` prints the old text tree only when asked. Telegram (`--png --send`) stays an opt-in.
+
+5. **Labels in English, content as typed** (chips, legend, START/DETOUR/PARKED) — the design system's mono uppercase register; Thai node text uses Noto Sans/Serif Thai at ≥10px.
 
 ## Consequences
 
-- `/session-worktree` gains view 3; `state/session-diagrams/` holds the JSON/HTML/PNG per run and is gitignored.
-- Contabo sessions need the same clone + symlink (and a Chromium) before they produce PNGs — follow-up, not blocking.
-- `~/.claude/CLAUDE.md` routes any standalone diagram deliverable to `diagram-design`; `artifact-diagramming` stays for figures inside an Artifact page; Mermaid is not a shipped visual.
-- Observed during the build: the Agents `main` working tree is shared by every C-level session. Another session's `merge_task` parks (stashes, `-u`) a foreign session's uncommitted WIP around its merge and restores it afterwards — the tree flickers for about a minute. Commit early, or bind a session worktree (`/session-open` step 4).
+- `/session-worktree` is a three-part answer now; the full tree is gone from the chat by default.
+- Every session that asks for a worktree gets one durable map file + one Artifact URL; `session-save`/`merge` can read the JSON later (not wired yet).
+- Contabo needs the clone + symlink (and a Chromium only if PNGs are wanted there) — parked, LungNote 0c2b506c.
+- Observed during the build: the Agents `main` working tree is shared by every C-level session; another session's `merge_task` parks (stashes `-u`) foreign uncommitted WIP around its merge and restores it about a minute later. Commit early or bind a session worktree (`/session-open` step 4).
 
 ## Verification
 
-- `scripts/test_session_diagram.py` — 10 tests: accessible-SVG contract, upstream `self_check.py`, 4px grid, the four states + counts, escaping/truncation, tree text format, Telegram size cap, CLI. Green under both the `__main__` harness and pytest.
-- First real run: session cto-576f0aff, 2026-09-08 23:02 — `check: OK`, `png: … (scale 2)`, `telegram: ok`.
-- Commit on Agents `main` 2026-09-08: `tools/session_diagram.py`, `scripts/test_session_diagram.py`, `.claude/skills/session-worktree/SKILL.md`, `.gitignore`.
+- `scripts/test_session_diagram.py` — 13 tests: files + status text, accessible-SVG contract on both maps + upstream `self_check.py`, 4px grid, patch merge + auto-stamping, status inference + here auto-advance, refs/cycles/errors, both detour kinds, escaping/truncation, tree + status text, artifact body, Telegram size cap, CLI map→patch→show. Green under the `__main__` harness and pytest.
+- First real map: session cto-576f0aff, 2026-09-09 (this session's own history: 4 goals, 12 tasks, 3 detours), `check: OK`, published as the session's Artifact.
+- Commits on Agents `main`: 1ca64bd (v1, Telegram PNG), c3d5d2b (v2, Artifact link), and the v3 session-map commit of 2026-09-09.
