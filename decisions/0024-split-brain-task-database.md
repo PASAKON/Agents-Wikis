@@ -94,9 +94,37 @@ command line, so the same query answers "whose is this?" from either side.
    where the other can read them. Preserves both capabilities and adds a sync
    path that can itself go stale, which is the failure mode this ADR is about.
 
-**Recommendation: option 2**, unless the CEO specifically wants to keep driving
-winbox from a phone. It removes the class of bug rather than managing it, and it
-is a config change rather than a new service.
+**Recommendation: option 2** — and the phone-control objection turns out to be
+void, which was not known when this ADR was first written.
+
+### Correction, same day: the relay already exists and already runs
+
+The CEO asked whether the single database should live on Contabo instead, since
+that box is always online. Checked, and the org already solved this a month ago
+in the opposite direction (task-776fbf7e, task-18241f1d):
+
+- `runners/relay_mcp_server.py` runs on Contabo and owns a `relay_queue` table.
+- `runners/mac_agent.py` runs on the Mac as launchd job `com.mooniex.mac-agent`
+  (**pid 659, live**) and drains that queue.
+
+Its own module docstring states the constraint that settles the question:
+
+> "Direction matters: **the Mac dials out**. Contabo cannot reach it — SSH is
+> closed there, verified `Connection refused` — and that asymmetry is the
+> security design, not a gap to fix."
+
+So moving the database to Contabo would mean either opening the Mac to inbound
+connections (giving up that security property) or building a network service in
+front of SQLite, which cannot be shared over a network share safely. On top of
+that, most repos simply are not on Contabo — `mooniex-webapp`, `cookierun-bot`,
+`mooniex-remotion` and others live only on the Mac, so a worker there cannot edit
+them at all.
+
+**The right shape is the one already built:** Contabo is the always-on front door
+that receives and queues; the Mac is the single hub that owns `tasks.db` and
+executes. Option 2 therefore costs the CEO nothing — Contabo keeps the ability to
+drive winbox, but through the relay instead of by ssh-ing there itself and
+recording the task in a database nobody else can see.
 
 ## What must not be concluded from this
 
