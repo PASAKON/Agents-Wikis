@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene: alert first, move by hand.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene: alert first, move by hand · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -980,3 +980,81 @@ three rules. The CEO's words: *"ถ้าจะใช้งาน Gdrive อ่�
 5. **Same-turn bookkeeping:** any folder created or moved updates the skill's
    tree and ID table in the same turn, and the updated subtree is pasted back
    to the CEO (skill rule 6).
+
+---
+
+## Section 50 — Every session is visible, and every teardown proves identity before it kills (CEO 2026-09-11, owner CTO)
+
+The CEO could not answer the most basic question about their own org:
+
+> **"ให้เป็นกฎเหล็กเลย เพราะฉันเช็คไม่ได้เลยว่ามี session เปิดจริงไหม"**
+
+Measured the same day: two live C-level sessions on Contabo (`CONTABO CTO
+#bfdcf202`, `#e1e3d3ef`) appeared nowhere in the Claude app, because
+`scripts/cto-claude.sh` and `scripts/cxo-claude.sh` built their `claude`
+invocation without `--remote-control`. Workers had it, the Windows C-level had
+it, the two bash launchers did not.
+
+### 1. Registration is not optional
+
+**Every session an agent can spawn passes `--remote-control`,** sourced from
+`runners.worker_init.remote_control_args(host)` which reads the per-host
+`remote_control` key in `config/hosts.yaml` (default true). One helper, one
+switch. Never hardcode the flag and never hardcode its absence: a literal
+`"--remote-control"` in a launcher means `hosts.yaml` cannot turn it off, which
+is the same bug in the other direction.
+
+### 2. The name carries the state, because there is no delete
+
+**Verified, do not re-litigate:** `--remote-control` registers a session; on exit,
+clean or killed, the entry goes *offline* within seconds but never disappears.
+No CLI, flag or API deregisters it (`claude --help`'s `rm <id>` removes a `--bg`
+background session, an unrelated concept). Removal is a manual UI action by the
+CEO.
+
+So state is stamped into the display name **while the session is still alive**:
+
+| transition | name becomes |
+|---|---|
+| `/session-close` | `✅ <MACHINE> <ROLE> #<id> (<topic>)` |
+| `/session-save`, and a force-saved close | `⏸ …` |
+| `/session-merge`, the absorbed session | `⛔ MERGED→#<target> …` |
+| force-killed or crashed | **no prefix** |
+
+**The absence of a prefix is the signal.** An offline entry with no prefix means
+that session died unexpectedly and is resumable. Nothing stamps that case, by
+construction, and nothing should start.
+
+### 3. A teardown proves identity before it kills
+
+On 2026-09-11 `state/tasks.db` recorded `pid=23068` for a winbox task. That pid
+had been recycled by Windows and now belonged to **`BlueStacksServices.exe`**,
+the emulator the Cookie Run bot plays in around the clock. The moment that task
+reached a terminal status, the reaper would have run `taskkill /PID 23068 /T /F`
+and killed the CEO's bot, violating the standing rule *"อย่าให้คอมว่างแล้ว Cookie
+ไม่วิ่ง เพราะเสีย Slot ที่สำคัญที่สุดคือ Slot เวลา"*. All 14 winbox rows carrying a pid
+were checked: 13 pids were gone and the 14th was BlueStacks. Not one still
+belonged to its task.
+
+**Before any kill, local or remote, confirm the process is still the task's own
+process** — match the task id in the command line, the same identity test the
+spawner used to discover the pid. Three outcomes, never two:
+
+- **killed** — it was ours, it is gone;
+- **already gone / not ours** — issue no kill, and clear the recorded pid;
+- **could not check** (ssh failed) — issue no kill, and **keep** the pid.
+
+`None` must never collapse into `False`. "I could not check" becoming "safe to
+kill" is exactly how a reaper kills the wrong process.
+
+### 4. A retry that cannot succeed is a bug, not patience
+
+The same half-wired teardown wrote **12,061 `SURFACE-REAPED` lines across 126
+tasks, every one `ssh_ok=False`**, retrying every five minutes forever, because
+`ssh_ok` was read from the ssh exit code alone and Windows `taskkill` exits
+non-zero when the pid is already gone. The captured `stderr` was never printed,
+so nobody could see why.
+
+**Transport success and operation success are different facts, and both are
+logged.** If a sweep cannot make progress, it must record why in a form a human
+can read, and it must stop repeating the identical call.
