@@ -111,10 +111,8 @@ This is the phase that delivers the CEO's sentence. It contains no hub/spoke rew
    launch and cannot be retrofitted to a running session.
 3. **Retire the stale process** found during the audit: a `claude setup-token` owned by user
    `secretary`, running 13 days, holding 126 MB. CEO decision, not a steward action.
-4. **Confirm the browser question.** `config/hosts.yaml` sets `max_browser_operators: 0` for
-   Contabo, so every `browser_operator` task there is refused as a conflict today. Whether a
-   headless Chrome can run inside the 4.7 GB pool is the one number still open at the time of
-   writing. If it cannot, browser work stays on winbox permanently and that is fine.
+4. **The browser question is now answered, and the answer is no.** Leave
+   `max_browser_operators: 0` for Contabo as it is. See the section below.
 
 **Cost:** a few hours. **Risk:** low; step 2 touches a box with live sessions, so it waits for
 the CEO's go. **Reversible:** yes.
@@ -163,12 +161,40 @@ other hardware anyway.
 
 ---
 
+## Disk is not the blocker, measured
+
+29 GB free, and **~18 GB of that is genuinely reclaimable**: a 12.95 GB docker build cache
+(131 entries, zero active, last used two months ago), ~3.4 GB of journal if vacuumed to
+500 MB, and 1.8 GB in `/tmp/claude-0`. Reclaiming would take the box from 29 GB to ~47 GB.
+Nothing has been reclaimed — Contabo is production and every write there needs the CEO's go.
+
+Against that, the repos worth cloning cost about **3 GB** in total (`mooniex-claudesign` 2.5 GB,
+of which 1.8 GB is `.git`, plus four small ones). Five repos named in `Agents/CLAUDE.md` as
+"not on Contabo yet" are **not on the Mac either** and could not be sized; they would have to
+come from GitHub if they exist there at all.
+
 ## What will never work on Contabo, whatever we do
 
+- **Browser work — and this is the important one.** Contabo has no browser binary at all: no
+  chrome, chromium or firefox, no Playwright or Puppeteer cache. `xvfb` and the headless
+  shared libraries are present, so one *could* be installed for roughly 400 MB of disk and
+  250-700 MB of RAM per lane.
+  **But installing one would not restore `browser_operator`.** The org drives browsers through
+  `mcp__claude-in-chrome__*`, which attaches to a **desktop Chrome carrying the CEO's
+  logged-in profile** — Higgsfield, Google Flow, Drive. A headless Chromium on a VPS holds
+  none of those sessions. Browser work therefore requires a machine where the CEO is signed
+  in, which today means winbox or the Mac, and no amount of VPS configuration changes that.
 - **Cookie Run.** It needs the game running in BlueStacks on winbox, with a real desktop.
 - **Anything GPU.** Contabo has none; that work is RunPod's and stays remote.
-- **Browser work**, unless the open question in Phase 1 step 4 resolves in its favour.
 - **macOS-only automation** — iTerm tab routing, AppleScript, computer-use on the Mac's screen.
+
+### What this costs the CEO's goal, stated plainly
+
+"Work from a phone with the Mac and the Windows box off" holds for **org, wiki, planning,
+code and deploy work**. It does **not** hold for the film pipeline: every Higgsfield
+generation, every harvest, every Drive filing step runs through a logged-in Chrome on winbox.
+Those remain winbox work, and winbox must be on for them. This is a property of the vendors'
+login model, not of our architecture.
 
 None of these is a reason not to proceed. They are a reason to keep winbox and the Mac as
 capable machines rather than to decommission them.
